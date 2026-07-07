@@ -21,6 +21,37 @@ const ACCOUNT_NAME = "QUAN TRUNG KIEN";
 
 const CONFIRM_WINDOW_MS = 10 * 60 * 1000;
 const POLL_INTERVAL_MS = 5000;
+const STORAGE_KEY = "k7301-donation-pending";
+
+// Phiên đóng góp đang chờ được lưu lại để không mất khi người dùng
+// chuyển sang app ngân hàng quét mã rồi quay lại (trình duyệt reload trang).
+function loadSavedSubmission() {
+  try {
+    const raw = window.localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    const saved = JSON.parse(raw);
+    if (!saved?.code || !saved?.deadline || !saved?.amount) return null;
+    return saved;
+  } catch {
+    return null;
+  }
+}
+
+function saveSubmission(record) {
+  try {
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(record));
+  } catch {
+    // localStorage bị chặn (chế độ riêng tư...) thì bỏ qua, chỉ mất khả năng khôi phục
+  }
+}
+
+function clearSavedSubmission() {
+  try {
+    window.localStorage.removeItem(STORAGE_KEY);
+  } catch {
+    // bỏ qua
+  }
+}
 
 const bankRows = [
   ["Số tài khoản", "3411413077"],
@@ -60,17 +91,27 @@ const inputClass =
   "mt-2 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-heritage-gold focus:ring-4 focus:ring-heritage-gold/15";
 
 export default function DonateSection() {
+  const [restored] = useState(loadSavedSubmission);
   const [form, setForm] = useState(initialForm);
   const [submitting, setSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   // phase: "form" → bước 1; "waiting" → bước 2 đang chờ admin xác nhận;
   // "confirmed" → đã xác nhận; "timeout" → quá 10 phút chưa xác nhận
-  const [phase, setPhase] = useState("form");
-  const [submission, setSubmission] = useState(null); // { code, name, amount }
-  const [remainingMs, setRemainingMs] = useState(CONFIRM_WINDOW_MS);
+  const [phase, setPhase] = useState(() => {
+    if (!restored) return "form";
+    return restored.deadline > Date.now() ? "waiting" : "timeout";
+  });
+  const [submission, setSubmission] = useState(() =>
+    restored
+      ? { code: restored.code, name: restored.name, amount: restored.amount }
+      : null,
+  ); // { code, name, amount }
+  const [remainingMs, setRemainingMs] = useState(() =>
+    restored ? Math.max(0, restored.deadline - Date.now()) : CONFIRM_WINDOW_MS,
+  );
   const [checking, setChecking] = useState(false);
   const [copied, setCopied] = useState("");
-  const deadlineRef = useRef(null);
+  const deadlineRef = useRef(restored?.deadline ?? null);
 
   function updateField(event) {
     const { name, value } = event.target;
@@ -90,6 +131,22 @@ export default function DonateSection() {
     if (!response.ok) return null;
     return response.json();
   }
+
+  // Vừa khôi phục phiên sau khi trang tải lại: hỏi trạng thái ngay một lần —
+  // nếu admin đã xác nhận trong lúc người dùng rời trang thì nhảy thẳng sang thành công.
+  useEffect(() => {
+    if (!restored) return undefined;
+    let cancelled = false;
+    fetchStatus(restored.code)
+      .then((data) => {
+        if (!cancelled && data?.status === "confirmed") setPhase("confirmed");
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Trong pha chờ: đếm ngược mỗi giây và hỏi trạng thái mỗi 5 giây.
   useEffect(() => {
@@ -143,8 +200,15 @@ export default function DonateSection() {
         throw new Error(data.error || "Có lỗi xảy ra, vui lòng thử lại");
       }
 
-      setSubmission({ code: data.code, name: form.name.trim(), amount });
-      deadlineRef.current = Date.now() + CONFIRM_WINDOW_MS;
+      const record = {
+        code: data.code,
+        name: form.name.trim(),
+        amount,
+        deadline: Date.now() + CONFIRM_WINDOW_MS,
+      };
+      saveSubmission(record);
+      setSubmission({ code: record.code, name: record.name, amount });
+      deadlineRef.current = record.deadline;
       setRemainingMs(CONFIRM_WINDOW_MS);
       setPhase("waiting");
     } catch (err) {
@@ -166,6 +230,7 @@ export default function DonateSection() {
   }
 
   function startOver() {
+    clearSavedSubmission();
     setForm(initialForm);
     setSubmission(null);
     setErrorMsg("");
