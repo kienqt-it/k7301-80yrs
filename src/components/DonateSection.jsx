@@ -11,6 +11,7 @@ import {
   RefreshCw,
   Send,
   ShieldCheck,
+  XCircle,
 } from "lucide-react";
 import SectionReveal from "./SectionReveal.jsx";
 import { formatCurrency, normalizeAmount } from "../utils/format.js";
@@ -21,6 +22,7 @@ const ACCOUNT_NAME = "QUAN TRUNG KIEN";
 
 const CONFIRM_WINDOW_MS = 10 * 60 * 1000;
 const POLL_INTERVAL_MS = 5000;
+const RETURN_DELAY_S = 10; // giây chờ trước khi tự quay về Bước 1 (từ chối / hết giờ)
 const STORAGE_KEY = "k7301-donation-pending";
 
 // Phiên đóng góp đang chờ được lưu lại để không mất khi người dùng
@@ -96,7 +98,8 @@ export default function DonateSection() {
   const [submitting, setSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   // phase: "form" → bước 1; "waiting" → bước 2 đang chờ admin xác nhận;
-  // "confirmed" → đã xác nhận; "timeout" → quá 10 phút chưa xác nhận
+  // "confirmed" → đã xác nhận; "rejected" → admin từ chối;
+  // "timeout" → quá 10 phút chưa xác nhận
   const [phase, setPhase] = useState(() => {
     if (!restored) return "form";
     return restored.deadline > Date.now() ? "waiting" : "timeout";
@@ -109,7 +112,8 @@ export default function DonateSection() {
   const [remainingMs, setRemainingMs] = useState(() =>
     restored ? Math.max(0, restored.deadline - Date.now()) : CONFIRM_WINDOW_MS,
   );
-  const [checking, setChecking] = useState(false);
+  const [rejectReason, setRejectReason] = useState("");
+  const [returnSeconds, setReturnSeconds] = useState(RETURN_DELAY_S);
   const [copied, setCopied] = useState("");
   const deadlineRef = useRef(restored?.deadline ?? null);
 
@@ -132,14 +136,27 @@ export default function DonateSection() {
     return response.json();
   }
 
+  // Áp kết quả trạng thái từ server; guard bằng hàm cập nhật để không
+  // "hồi sinh" màn hình cũ nếu người dùng đã quay về Bước 1.
+  function applyStatus(data) {
+    if (!data) return;
+    if (data.status === "confirmed") {
+      setPhase((current) => (current === "form" ? current : "confirmed"));
+    } else if (data.status === "rejected") {
+      setRejectReason(data.reject_reason || "");
+      setPhase((current) => (current === "form" ? current : "rejected"));
+    }
+  }
+
   // Vừa khôi phục phiên sau khi trang tải lại: hỏi trạng thái ngay một lần —
-  // nếu admin đã xác nhận trong lúc người dùng rời trang thì nhảy thẳng sang thành công.
+  // nếu admin đã xác nhận/từ chối trong lúc người dùng rời trang thì
+  // chuyển thẳng sang màn hình tương ứng.
   useEffect(() => {
     if (!restored) return undefined;
     let cancelled = false;
     fetchStatus(restored.code)
       .then((data) => {
-        if (!cancelled && data?.status === "confirmed") setPhase("confirmed");
+        if (!cancelled) applyStatus(data);
       })
       .catch(() => {});
     return () => {
@@ -162,7 +179,7 @@ export default function DonateSection() {
     const poll = window.setInterval(async () => {
       try {
         const data = await fetchStatus(submission.code);
-        if (!cancelled && data?.status === "confirmed") setPhase("confirmed");
+        if (!cancelled) applyStatus(data);
       } catch {
         // mạng chập chờn thì lần poll sau thử lại
       }
@@ -174,6 +191,28 @@ export default function DonateSection() {
       window.clearInterval(poll);
     };
   }, [phase, submission]);
+
+  // Bị từ chối hoặc hết giờ: xóa phiên đã lưu, đếm ngược 10 giây rồi tự quay về Bước 1.
+  useEffect(() => {
+    if (phase !== "rejected" && phase !== "timeout") return undefined;
+
+    clearSavedSubmission();
+    setReturnSeconds(RETURN_DELAY_S);
+    const deadline = Date.now() + RETURN_DELAY_S * 1000;
+
+    const id = window.setInterval(() => {
+      const left = Math.ceil((deadline - Date.now()) / 1000);
+      if (left <= 0) {
+        window.clearInterval(id);
+        startOver();
+        return;
+      }
+      setReturnSeconds(left);
+    }, 250);
+
+    return () => window.clearInterval(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase]);
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -218,22 +257,12 @@ export default function DonateSection() {
     }
   }
 
-  async function checkAgain() {
-    if (!submission) return;
-    setChecking(true);
-    try {
-      const data = await fetchStatus(submission.code);
-      if (data?.status === "confirmed") setPhase("confirmed");
-    } finally {
-      setChecking(false);
-    }
-  }
-
   function startOver() {
     clearSavedSubmission();
     setForm(initialForm);
     setSubmission(null);
     setErrorMsg("");
+    setRejectReason("");
     setPhase("form");
   }
 
@@ -558,30 +587,69 @@ export default function DonateSection() {
                 </div>
               )}
 
+              {phase === "rejected" && submission && (
+                <div
+                  className="mt-6 flex flex-col items-center rounded-xl border border-red-200 bg-red-50 px-5 py-10 text-center sm:px-6 sm:py-12"
+                  role="alert"
+                >
+                  <span className="flex h-14 w-14 items-center justify-center rounded-full bg-red-100 text-heritage-red">
+                    <XCircle className="h-6 w-6" aria-hidden="true" />
+                  </span>
+                  <p className="mt-5 text-base font-bold text-heritage-red">
+                    Giao dịch bị từ chối
+                  </p>
+                  {rejectReason && (
+                    <p className="mt-2 max-w-xs text-sm font-semibold leading-6 text-red-700">
+                      Lý do: {rejectReason}
+                    </p>
+                  )}
+                  <p className="mt-2 max-w-xs text-sm leading-6 text-red-700">
+                    Khoản ghi nhận với mã <strong>{submission.code}</strong>{" "}
+                    không được xác nhận. Vui lòng kiểm tra lại thông tin và thực
+                    hiện lại từ Bước 1. Mọi thắc mắc xin liên hệ Ban liên lạc
+                    K7301.
+                  </p>
+                  <p className="mt-4 text-sm font-semibold tabular-nums text-red-800">
+                    Tự quay về Bước 1 sau {returnSeconds} giây...
+                  </p>
+                  <button
+                    type="button"
+                    onClick={startOver}
+                    className="mt-3 inline-flex items-center gap-2 rounded-lg border border-red-300 bg-white px-4 py-2 text-sm font-semibold text-heritage-red transition hover:border-red-400"
+                  >
+                    <RefreshCw className="h-4 w-4" aria-hidden="true" />
+                    Quay lại Bước 1 ngay
+                  </button>
+                </div>
+              )}
+
               {phase === "timeout" && submission && (
-                <div className="mt-6 flex flex-col items-center rounded-xl border border-amber-200 bg-amber-50 px-5 py-10 text-center sm:px-6 sm:py-12">
+                <div
+                  className="mt-6 flex flex-col items-center rounded-xl border border-amber-200 bg-amber-50 px-5 py-10 text-center sm:px-6 sm:py-12"
+                  role="alert"
+                >
                   <span className="flex h-14 w-14 items-center justify-center rounded-full bg-amber-100 text-amber-600">
                     <Hourglass className="h-6 w-6" aria-hidden="true" />
                   </span>
                   <p className="mt-5 text-base font-bold text-amber-800">
-                    Hết thời gian chờ xác nhận nhanh
+                    Hết thời gian chờ xác nhận
                   </p>
                   <p className="mt-2 max-w-xs text-sm leading-6 text-amber-700">
-                    Đừng lo — khoản góp với mã{" "}
-                    <strong>{submission.code}</strong> vẫn được lưu. Ban liên
-                    lạc sẽ đối chiếu và cập nhật vào danh sách sớm nhất.
+                    Nếu bạn đã chuyển khoản, không cần thao tác lại — Ban liên
+                    lạc sẽ đối chiếu theo mã <strong>{submission.code}</strong>{" "}
+                    và cập nhật sau. Mọi thắc mắc xin liên hệ Ban liên lạc
+                    K7301.
+                  </p>
+                  <p className="mt-4 text-sm font-semibold tabular-nums text-amber-800">
+                    Tự quay về Bước 1 sau {returnSeconds} giây...
                   </p>
                   <button
                     type="button"
-                    onClick={checkAgain}
-                    disabled={checking}
-                    className="mt-5 inline-flex items-center gap-2 rounded-lg border border-amber-300 bg-white px-4 py-2 text-sm font-semibold text-amber-800 transition hover:border-amber-400 disabled:cursor-not-allowed disabled:opacity-60"
+                    onClick={startOver}
+                    className="mt-3 inline-flex items-center gap-2 rounded-lg border border-amber-300 bg-white px-4 py-2 text-sm font-semibold text-amber-800 transition hover:border-amber-400"
                   >
-                    <RefreshCw
-                      className={`h-4 w-4 ${checking ? "animate-spin" : ""}`}
-                      aria-hidden="true"
-                    />
-                    {checking ? "Đang kiểm tra..." : "Kiểm tra lại trạng thái"}
+                    <RefreshCw className="h-4 w-4" aria-hidden="true" />
+                    Quay lại Bước 1 ngay
                   </button>
                 </div>
               )}

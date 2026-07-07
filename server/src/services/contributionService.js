@@ -29,7 +29,7 @@ export async function createContribution({ name, phone, amount, note }) {
 
 export async function getContributionStatusByCode(code) {
   const result = await db.execute({
-    sql: "SELECT code, status, amount, confirmed_at FROM contributions WHERE code = ?",
+    sql: "SELECT code, status, amount, reject_reason, confirmed_at FROM contributions WHERE code = ?",
     args: [code],
   });
   return firstRow(result);
