@@ -33,7 +33,7 @@ const quickAmounts = [200000, 500000, 1000000, 2000000];
 function formatAmountInput(value) {
   const digits = String(value).replace(/\D/g, "");
   if (!digits) return "";
-  return Number(digits).toLocaleString("en-US");
+  return Number(digits).toLocaleString("vi-VN");
 }
 
 function buildQrUrl({ amount = 0, code = "" } = {}) {
@@ -191,9 +191,9 @@ export default function DonateSection() {
     >
       <div className="mx-auto max-w-6xl">
         <div className="max-w-2xl">
-          <p className="flex items-center gap-2 text-sm font-bold uppercase tracking-[0.16em] text-heritage-red">
-            <HeartHandshake className="h-4 w-4" aria-hidden="true" />
-            Đóng góp &amp; chuyển khoản
+          <p className="flex items-center gap-2 text-sm font-bold uppercase leading-6 tracking-[0.16em] text-heritage-red">
+            <HeartHandshake className="h-4 w-4 shrink-0" aria-hidden="true" />
+            <span className="min-w-0">Đóng góp &amp; chuyển khoản</span>
           </p>
           <h2 className="mt-4 text-3xl font-bold leading-tight text-heritage-blueDark sm:text-4xl">
             Một lần quét mã, một lời ghi nhận
@@ -213,11 +213,13 @@ export default function DonateSection() {
           <div className="grid lg:grid-cols-[1.05fr_0.95fr]">
             {/* ---- Bước 1: form thông tin ---- */}
             <form onSubmit={handleSubmit} className="flex flex-col p-6 sm:p-10">
-              <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-heritage-sepia">
-                Bước 1 · Thông tin người đóng góp
+              <p className="flex items-center gap-2 text-xs font-bold uppercase leading-5 tracking-[0.18em] text-heritage-sepia">
+                <span className="min-w-0">
+                  Bước 1 · Thông tin người đóng góp
+                </span>
                 {stepOneDone && (
                   <CheckCircle2
-                    className="h-4 w-4 text-emerald-600"
+                    className="h-4 w-4 shrink-0 text-emerald-600"
                     aria-hidden="true"
                   />
                 )}
@@ -225,20 +227,27 @@ export default function DonateSection() {
 
               {stepOneDone ? (
                 <div className="mt-6 rounded-xl border border-emerald-200 bg-emerald-50 p-5">
-                  <p className="flex items-center gap-2 text-sm font-semibold text-emerald-700">
-                    <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
-                    Đã ghi nhận thông tin của {submission?.name}
+                  <p className="flex items-start gap-2 text-sm font-semibold leading-6 text-emerald-700">
+                    <CheckCircle2
+                      className="mt-1 h-4 w-4 shrink-0"
+                      aria-hidden="true"
+                    />
+                    <span className="min-w-0 break-words">
+                      Đã ghi nhận thông tin của {submission?.name}
+                    </span>
                   </p>
                   <dl className="mt-4 space-y-2 text-sm text-emerald-900">
-                    <div className="flex justify-between gap-4">
-                      <dt className="text-emerald-700">Số tiền</dt>
-                      <dd className="font-bold">
+                    <div className="flex items-baseline justify-between gap-4">
+                      <dt className="shrink-0 text-emerald-700">Số tiền</dt>
+                      <dd className="text-right font-bold tabular-nums">
                         {formatCurrency(submission?.amount || 0)} đ
                       </dd>
                     </div>
-                    <div className="flex justify-between gap-4">
-                      <dt className="text-emerald-700">Mã đối chiếu</dt>
-                      <dd className="font-bold tracking-wider">
+                    <div className="flex items-baseline justify-between gap-4">
+                      <dt className="shrink-0 text-emerald-700">
+                        Mã đối chiếu
+                      </dt>
+                      <dd className="break-all text-right font-bold tracking-wider">
                         {submission?.code}
                       </dd>
                     </div>
@@ -298,7 +307,7 @@ export default function DonateSection() {
                         value={form.amount}
                         onChange={updateField}
                         inputMode="numeric"
-                        placeholder="1,000,000"
+                        placeholder="1.000.000"
                         className={inputClass}
                         required
                       />
@@ -310,7 +319,7 @@ export default function DonateSection() {
                             onClick={() => pickAmount(amount)}
                             className="rounded-full border border-slate-200 px-4 py-1.5 text-xs font-semibold text-slate-600 transition hover:border-heritage-gold hover:text-heritage-blueDark"
                           >
-                            {amount.toLocaleString("en-US")}
+                            {amount.toLocaleString("vi-VN")}
                           </button>
                         ))}
                       </span>
@@ -365,12 +374,12 @@ export default function DonateSection() {
               id="chuyen-khoan"
               className="border-t border-slate-200/80 bg-[#faf7ef] p-6 sm:p-10 lg:border-l lg:border-t-0"
             >
-              <p className="text-xs font-bold uppercase tracking-[0.18em] text-heritage-sepia">
+              <p className="text-xs font-bold uppercase leading-5 tracking-[0.18em] text-heritage-sepia">
                 Bước 2 · Quét mã chuyển khoản
               </p>
 
               {phase === "form" && (
-                <div className="mt-6 flex flex-col items-center rounded-xl border border-dashed border-slate-300 bg-white/60 px-6 py-14 text-center">
+                <div className="mt-6 flex flex-col items-center rounded-xl border border-dashed border-slate-300 bg-white/60 px-5 py-10 text-center sm:px-6 sm:py-14">
                   <span className="flex h-14 w-14 items-center justify-center rounded-full bg-slate-100 text-slate-400">
                     <Lock className="h-6 w-6" aria-hidden="true" />
                   </span>
@@ -408,10 +417,10 @@ export default function DonateSection() {
                     role="status"
                     aria-live="polite"
                   >
-                    <p className="flex items-center justify-center gap-2 text-sm font-semibold text-amber-800">
-                      <Hourglass className="h-4 w-4" aria-hidden="true" />
-                      Chờ Ban liên lạc xác nhận:{" "}
-                      <span className="font-mono text-base tabular-nums">
+                    <p className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-center text-sm font-semibold text-amber-800">
+                      <Hourglass className="h-4 w-4 shrink-0" aria-hidden="true" />
+                      <span>Chờ Ban liên lạc xác nhận:</span>
+                      <span className="font-mono text-base leading-none tabular-nums">
                         {formatCountdown(remainingMs)}
                       </span>
                     </p>
@@ -422,7 +431,7 @@ export default function DonateSection() {
                   </div>
 
                   <div
-                    className="mt-8 flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.16em] text-slate-400"
+                    className="mt-8 flex items-center gap-3 text-center text-[11px] font-bold uppercase leading-4 tracking-[0.16em] text-slate-400"
                     aria-hidden="true"
                   >
                     <span className="h-px flex-1 bg-slate-200" />
@@ -435,13 +444,13 @@ export default function DonateSection() {
                       ([label, value]) => (
                         <div
                           key={label}
-                          className="flex items-start justify-between gap-4 py-3.5"
+                          className="flex items-center justify-between gap-4 py-3.5"
                         >
-                          <dt className="pt-1 text-xs font-semibold uppercase tracking-wide text-slate-500">
+                          <dt className="shrink-0 text-xs font-semibold uppercase leading-5 tracking-wide text-slate-500">
                             {label}
                           </dt>
                           <dd className="flex min-w-0 items-center justify-end gap-2 text-right">
-                            <span className="break-words text-sm font-semibold text-heritage-blueDark">
+                            <span className="min-w-0 break-words text-sm font-semibold leading-5 text-heritage-blueDark">
                               {value}
                             </span>
                             <button
@@ -469,7 +478,7 @@ export default function DonateSection() {
               )}
 
               {phase === "confirmed" && submission && (
-                <div className="mt-6 flex flex-col items-center rounded-xl border border-emerald-200 bg-emerald-50 px-6 py-14 text-center">
+                <div className="mt-6 flex flex-col items-center rounded-xl border border-emerald-200 bg-emerald-50 px-5 py-10 text-center sm:px-6 sm:py-14">
                   <span className="flex h-14 w-14 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
                     <PartyPopper className="h-6 w-6" aria-hidden="true" />
                   </span>
@@ -485,7 +494,7 @@ export default function DonateSection() {
               )}
 
               {phase === "timeout" && submission && (
-                <div className="mt-6 flex flex-col items-center rounded-xl border border-amber-200 bg-amber-50 px-6 py-12 text-center">
+                <div className="mt-6 flex flex-col items-center rounded-xl border border-amber-200 bg-amber-50 px-5 py-10 text-center sm:px-6 sm:py-12">
                   <span className="flex h-14 w-14 items-center justify-center rounded-full bg-amber-100 text-amber-600">
                     <Hourglass className="h-6 w-6" aria-hidden="true" />
                   </span>
@@ -512,12 +521,14 @@ export default function DonateSection() {
                 </div>
               )}
 
-              <p className="mt-6 flex items-center justify-center gap-2 text-xs text-slate-500">
+              <p className="mt-6 flex items-start justify-center gap-2 text-xs leading-5 text-slate-500">
                 <ShieldCheck
-                  className="h-4 w-4 text-emerald-600"
+                  className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600"
                   aria-hidden="true"
                 />
-                Tài khoản tiếp nhận do Ban liên lạc K7301 quản lý
+                <span className="min-w-0 text-center">
+                  Tài khoản tiếp nhận do Ban liên lạc K7301 quản lý
+                </span>
               </p>
             </div>
           </div>
