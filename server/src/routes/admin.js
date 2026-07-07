@@ -8,6 +8,7 @@ import {
   rejectContribution,
 } from "../services/contributionService.js";
 import { contributionsToCsv } from "../services/csvExport.js";
+import { contributionsToXlsx } from "../services/excelExport.js";
 
 export const adminRouter = Router();
 adminRouter.use(adminAuth);
@@ -58,6 +59,23 @@ adminRouter.get("/export.csv", async (req, res, next) => {
     res.setHeader("Content-Type", "text/csv; charset=utf-8");
     res.setHeader("Content-Disposition", `attachment; filename="k7301-dong-gop-${dateStamp}.csv"`);
     res.send(csv);
+  } catch (err) {
+    next(err);
+  }
+});
+
+adminRouter.get("/export.xlsx", async (req, res, next) => {
+  try {
+    const { status } = req.query;
+    const rows = await exportContributions({ status });
+    const buffer = await contributionsToXlsx(rows);
+    const dateStamp = new Date().toISOString().slice(0, 10);
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    );
+    res.setHeader("Content-Disposition", `attachment; filename="k7301-dong-gop-${dateStamp}.xlsx"`);
+    res.send(Buffer.from(buffer));
   } catch (err) {
     next(err);
   }

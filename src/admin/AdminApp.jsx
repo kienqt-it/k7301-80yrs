@@ -122,7 +122,7 @@ export default function AdminApp() {
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <ExportButton status={status} />
+            <ExportButton />
             <button
               type="button"
               onClick={handleLogout}

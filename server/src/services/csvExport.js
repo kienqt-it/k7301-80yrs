@@ -1,16 +1,23 @@
 import { stringify } from "csv-stringify/sync";
 
+export const STATUS_LABELS = {
+  pending: "Chờ xác nhận",
+  confirmed: "Đã xác nhận",
+  rejected: "Từ chối",
+};
+
 const COLUMNS = [
   { key: "code", header: "Mã đối chiếu" },
   { key: "name", header: "Họ tên" },
   { key: "phone", header: "Số điện thoại" },
   { key: "amount", header: "Số tiền" },
   { key: "note", header: "Lời nhắn" },
+  { key: "status", header: "Trạng thái" },
   { key: "submitted_at", header: "Thời gian gửi" },
   { key: "confirmed_at", header: "Thời gian xác nhận" },
 ];
 
-function formatDateTime(value) {
+export function formatDateTime(value) {
   if (!value) return "";
   const date = new Date(value);
   const pad = (n) => String(n).padStart(2, "0");
@@ -20,6 +27,7 @@ function formatDateTime(value) {
 export function contributionsToCsv(rows) {
   const formattedRows = rows.map((row) => ({
     ...row,
+    status: STATUS_LABELS[row.status] || row.status,
     submitted_at: formatDateTime(row.submitted_at),
     confirmed_at: formatDateTime(row.confirmed_at),
   }));
