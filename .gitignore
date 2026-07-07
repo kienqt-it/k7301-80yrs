@@ -22,3 +22,4 @@ DEPLOY.md
 
 # Dữ liệu server cục bộ
 server/data/
+.env*
