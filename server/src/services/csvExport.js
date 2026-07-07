@@ -17,11 +17,23 @@ const COLUMNS = [
   { key: "confirmed_at", header: "Thời gian xác nhận" },
 ];
 
+const VIETNAM_TIME_FORMATTER = new Intl.DateTimeFormat("vi-VN", {
+  timeZone: "Asia/Ho_Chi_Minh",
+  day: "2-digit",
+  month: "2-digit",
+  year: "numeric",
+  hour: "2-digit",
+  minute: "2-digit",
+  hour12: false,
+});
+
 export function formatDateTime(value) {
   if (!value) return "";
-  const date = new Date(value);
-  const pad = (n) => String(n).padStart(2, "0");
-  return `${pad(date.getDate())}/${pad(date.getMonth() + 1)}/${date.getFullYear()} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
+  const parts = VIETNAM_TIME_FORMATTER.formatToParts(new Date(value)).reduce(
+    (acc, part) => ({ ...acc, [part.type]: part.value }),
+    {},
+  );
+  return `${parts.day}/${parts.month}/${parts.year} ${parts.hour}:${parts.minute}`;
 }
 
 export function contributionsToCsv(rows) {
