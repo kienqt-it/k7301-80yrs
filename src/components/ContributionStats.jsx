@@ -1,10 +1,12 @@
 import { useRef } from "react";
-import CountUp from "react-countup";
+import ReactCountUp from "react-countup";
 import { motion, useInView } from "framer-motion";
 import { Banknote, PartyPopper, Target, TrendingUp, Users } from "lucide-react";
 import SectionReveal from "./SectionReveal.jsx";
 import Fireworks from "./Fireworks.jsx";
 import { formatCurrency } from "../utils/format.js";
+
+const CountUp = ReactCountUp.default ?? ReactCountUp;
 
 export default function ContributionStats({ total, targetAmount, contributorCount }) {
   const progress = Math.min((total / targetAmount) * 100, 100);
