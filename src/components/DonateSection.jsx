@@ -12,15 +12,15 @@ import {
 import SectionReveal from "./SectionReveal.jsx";
 import { normalizeAmount } from "../utils/format.js";
 
-const BANK_ID = "ICB"; // TMCP Công thương Việt Nam (VietinBank)
-const ACCOUNT_NO = "127000113108";
-const ACCOUNT_NAME = "Truong THPT Tan Trao";
+const BANK_ID = "BIDV"; // TMCP Đầu tư & Phát triển Việt Nam
+const ACCOUNT_NO = "3411413077";
+const ACCOUNT_NAME = "QUAN TRUNG KIEN";
 const DEFAULT_TRANSFER_NOTE = "K7301 dong gop 80 nam";
 
 const bankRows = [
-  ["Số tài khoản", "127000113108"],
-  ["Ngân hàng", "TMCP Công thương Việt Nam - CN Tuyên Quang"],
-  ["Tên tài khoản", "Trường Trung học phổ thông Tân Trào"],
+  ["Số tài khoản", "3411413077"],
+  ["Ngân hàng", "TMCP Đầu tư & Phát triển Việt Nam (BIDV)"],
+  ["Tên tài khoản", "QUAN TRUNG KIEN"],
   ["Nội dung gợi ý", "K7301 - Họ tên - Số điện thoại"],
 ];
 
@@ -307,8 +307,8 @@ export default function DonateSection() {
                   src={qrUrl}
                   alt={
                     qrPersonalized
-                      ? "Mã VietQR chuyển khoản tới Trường THPT Tân Trào, đã gắn tên người chuyển"
-                      : "Mã VietQR chuyển khoản tới Trường THPT Tân Trào"
+                      ? "Mã VietQR chuyển khoản tới tài khoản BIDV của Ban liên lạc K7301, đã gắn tên người chuyển"
+                      : "Mã VietQR chuyển khoản tới tài khoản BIDV của Ban liên lạc K7301"
                   }
                   width={340}
                   height={420}
@@ -382,7 +382,7 @@ export default function DonateSection() {
                   className="h-4 w-4 text-emerald-600"
                   aria-hidden="true"
                 />
-                Tài khoản chính thức do nhà trường cung cấp
+                Tài khoản tiếp nhận do Ban liên lạc K7301 quản lý
               </p>
             </div>
           </div>
