@@ -1,0 +1,24 @@
+# Dependencies & build
+node_modules/
+dist/
+
+# Log & ảnh chụp thử nghiệm
+dev-server*.log
+screenshot-*.png
+
+# Biến môi trường & bí mật (giữ lại .env.example làm mẫu cho người clone)
+.env
+.env.*
+!.env.example
+
+# Tài liệu deploy nội bộ — không đẩy lên repo
+DEPLOY.md
+
+# Cấu hình máy cá nhân
+.vercel
+.claude/settings.local.json
+.agents/
+.DS_Store
+
+# Dữ liệu server cục bộ
+server/data/
