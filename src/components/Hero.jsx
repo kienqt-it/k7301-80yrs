@@ -33,11 +33,11 @@ export default function Hero() {
       <img
         src={heroImage}
         alt="Không khí tri ân mái trường Tân Trào trong ánh chiều vàng"
-        className="absolute inset-0 -z-20 h-full w-full animate-kenburns object-cover"
+        className="absolute inset-0 -z-20 h-full w-full origin-bottom animate-kenburns object-cover object-bottom"
         style={{ filter: "sepia(0.3) saturate(1.05) contrast(1.02)" }}
       />
       <div className="hero-vignette absolute inset-0 -z-10" />
-      <div className="absolute inset-x-0 bottom-0 -z-10 h-40 bg-gradient-to-t from-heritage-paper to-transparent" />
+      <div className="absolute inset-x-0 bottom-0 -z-10 h-24 bg-gradient-to-t from-heritage-paper to-transparent" />
 
       <div className="pointer-events-none absolute inset-0 -z-[5]" aria-hidden="true">
         {dustParticles.map((particle, index) => (

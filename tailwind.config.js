@@ -43,8 +43,10 @@ export default {
           "100%": { transform: "translateX(100%)" },
         },
         kenburns: {
+          // Zoom nhẹ, neo theo mép dưới (origin-bottom) và chỉ trôi ngang —
+          // không trôi dọc để phần dưới của ảnh hero không bị khuất.
           "0%": { transform: "scale(1) translate3d(0, 0, 0)" },
-          "100%": { transform: "scale(1.12) translate3d(-1.5%, 1%, 0)" },
+          "100%": { transform: "scale(1.06) translate3d(-1.2%, 0, 0)" },
         },
         floatUp: {
           "0%": { transform: "translateY(0)", opacity: "0" },
