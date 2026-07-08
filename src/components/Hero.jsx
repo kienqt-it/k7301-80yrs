@@ -5,7 +5,7 @@ import {
   useScroll,
   useTransform,
 } from "framer-motion";
-import { ArrowDown, CalendarHeart, HeartHandshake } from "lucide-react";
+import { ArrowDown, HeartHandshake } from "lucide-react";
 import heroImage from "../assets/tan-trao-hero.jpg";
 
 const EASE_OUT = [0.22, 1, 0.36, 1];
@@ -13,9 +13,9 @@ const EASE_OUT = [0.22, 1, 0.36, 1];
 /*
  * Nhịp mở màn "ký ức hiện về" — một chuỗi nghi thức duy nhất:
  * 0.0s ánh giấy rút đi (ảnh cũ "tráng" dần) → 0.2s dòng chữ tay tự viết
- * → 0.95s dòng niên đại + kẻ vàng tự kéo → 1.05s tiêu đề nét dần
- * → 1.35s đoạn dẫn → 1.55s nút → 1.95s con dấu đóng xuống + vòng mực loang
- * → 2.45s mũi tên cuộn + vệt sáng lướt qua nút vàng một lần.
+ * → 0.85s tiêu đề nét dần → 1.15s câu dẫn → 1.35s nút
+ * → 1.7s con dấu đóng xuống + vòng mực loang
+ * → 2.2s mũi tên cuộn + vệt sáng lướt qua nút vàng một lần.
  */
 const riseIn = (delay, distance = 26) => ({
   initial: { opacity: 0, y: distance },
@@ -103,7 +103,7 @@ export default function Hero() {
         className="absolute right-4 top-[92px] z-10 sm:right-10 sm:top-28"
         initial={{ opacity: 0, scale: 1.7, rotate: -24 }}
         animate={{ opacity: 1, scale: 1, rotate: -10 }}
-        transition={{ delay: 1.95, duration: 0.4, ease: EASE_OUT }}
+        transition={{ delay: 1.7, duration: 0.4, ease: EASE_OUT }}
         aria-hidden="true"
       >
         <span className="relative grid h-20 w-20 place-items-center rounded-full border-2 border-heritage-gold/75 p-1 sm:h-28 sm:w-28">
@@ -111,7 +111,7 @@ export default function Hero() {
             className="absolute inset-0 rounded-full border-2 border-heritage-gold/60"
             initial={{ opacity: 0, scale: 1 }}
             animate={{ opacity: [0, 0.65, 0], scale: [1, 1.45, 1.45] }}
-            transition={{ delay: 2.35, duration: 0.8, ease: "easeOut", times: [0, 0.25, 1] }}
+            transition={{ delay: 2.1, duration: 0.8, ease: "easeOut", times: [0, 0.25, 1] }}
           />
           <span className="grid h-full w-full place-items-center rounded-full border border-heritage-gold/50 text-center">
             <span className="font-display text-2xl font-bold leading-none text-heritage-goldSoft sm:text-4xl">
@@ -153,27 +153,9 @@ export default function Hero() {
             Tuyên Quang, những mùa phượng đã xa...
           </motion.p>
 
-          <motion.div
-            {...riseIn(0.95, 18)}
-            className="mb-6 mt-4 flex flex-wrap items-center gap-3 text-sm font-semibold uppercase tracking-[0.18em] text-heritage-goldSoft"
-          >
-            <span className="inline-flex items-center gap-2">
-              <CalendarHeart className="h-4 w-4" aria-hidden="true" />
-              1946 – 2026
-            </span>
-            <motion.span
-              className="h-px w-12 origin-left bg-heritage-gold"
-              initial={{ scaleX: 0 }}
-              animate={{ scaleX: 1 }}
-              transition={{ delay: 1.2, duration: 0.5, ease: EASE_OUT }}
-              aria-hidden="true"
-            />
-            <span>80 năm Trường THPT Tân Trào</span>
-          </motion.div>
-
           {/* Tiêu đề nét dần vào tiêu điểm như ký ức rõ dần */}
           <motion.h1
-            className="max-w-3xl break-words text-4xl font-bold leading-tight text-white sm:text-5xl lg:text-6xl"
+            className="mt-3 max-w-3xl break-words text-5xl font-bold leading-[1.12] text-white sm:text-6xl lg:text-7xl"
             initial={
               reduceMotion
                 ? { opacity: 0 }
@@ -184,28 +166,28 @@ export default function Hero() {
                 ? { opacity: 1 }
                 : { opacity: 1, y: 0, filter: "blur(0px)" }
             }
-            transition={{ delay: 1.05, duration: 0.95, ease: EASE_OUT }}
+            transition={{ delay: 0.85, duration: 0.95, ease: EASE_OUT }}
           >
-            K7301 - Tri ân mái trường Tân Trào
+            {/* &nbsp; giữ từ ghép/danh từ riêng không bị tách khi xuống dòng */}
+            Tri ân mái&nbsp;trường Tân&nbsp;Trào
           </motion.h1>
 
           <motion.p
-            {...riseIn(1.35)}
-            className="mt-6 max-w-[32ch] break-words text-base leading-8 text-white/90 sm:max-w-2xl sm:text-lg"
+            {...riseIn(1.15)}
+            className="mt-5 max-w-[34ch] break-words text-base leading-8 text-white/90 sm:max-w-xl sm:text-lg"
           >
             {/* &nbsp; giữ "80 năm" và niên đại không bị ngắt dòng lơ lửng trên mobile */}
-            Cùng nhau góp một phần nghĩa tình của tập thể K7301, hướng tới Lễ
-            kỷ niệm 80&nbsp;năm thành lập Trường THPT Tân Trào
-            1946&nbsp;–&nbsp;2026.
+            Tấm lòng của tập thể K7301 gửi về Lễ kỷ niệm 80&nbsp;năm thành lập
+            trường, 1946&nbsp;–&nbsp;2026.
           </motion.p>
 
           <motion.div
-            {...riseIn(1.55)}
-            className="mt-9 flex max-w-[32ch] flex-col gap-3 sm:max-w-none sm:flex-row"
+            {...riseIn(1.35)}
+            className="mt-9 flex flex-col items-start gap-5 sm:flex-row sm:items-center sm:gap-7"
           >
             <a
               href="#form-gop"
-              className="relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-md bg-heritage-gold px-5 py-3 text-sm font-bold text-heritage-blueDark shadow-soft transition hover:-translate-y-0.5 hover:bg-heritage-goldSoft active:translate-y-0 active:scale-[0.98]"
+              className="relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-md bg-heritage-gold px-6 py-3 text-sm font-bold text-heritage-blueDark shadow-soft transition hover:-translate-y-0.5 hover:bg-heritage-goldSoft active:translate-y-0 active:scale-[0.98]"
             >
               <HeartHandshake className="h-5 w-5" aria-hidden="true" />
               Ghi nhận đóng góp
@@ -215,12 +197,13 @@ export default function Hero() {
                 aria-hidden="true"
               />
             </a>
+            {/* Hành động phụ là text-link để bớt một khối hộp trên nền ảnh */}
             <a
               href="#thu-ngo"
-              className="inline-flex items-center justify-center gap-2 rounded-md border border-white/50 bg-white/10 px-5 py-3 text-sm font-semibold text-white backdrop-blur transition hover:bg-white/20"
+              className="inline-flex items-center gap-2 py-2 text-sm font-semibold text-white/85 underline decoration-heritage-gold/70 decoration-2 underline-offset-8 transition hover:text-white hover:decoration-heritage-gold"
             >
-              <ArrowDown className="h-5 w-5" aria-hidden="true" />
               Đọc thư ngỏ
+              <ArrowDown className="h-4 w-4" aria-hidden="true" />
             </a>
           </motion.div>
         </motion.div>
@@ -232,7 +215,7 @@ export default function Hero() {
         className="absolute bottom-6 left-1/2 hidden -translate-x-1/2 text-white/70 transition hover:text-white sm:block"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 2.45, duration: 0.8 }}
+        transition={{ delay: 2.2, duration: 0.8 }}
       >
         <ArrowDown
           className="h-6 w-6 animate-nudgeDown drop-shadow-[0_1px_3px_rgba(23,37,84,0.6)]"

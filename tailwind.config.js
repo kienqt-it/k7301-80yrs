@@ -63,7 +63,7 @@ export default {
         floatCard: "floatCard 10s ease-in-out infinite",
         shine: "shine 2.8s ease-in-out infinite",
         // Vệt sáng chạy đúng một lần qua nút CTA sau màn mở đầu hero
-        shineOnce: "shine 1.1s ease-in-out 2.6s 1 both",
+        shineOnce: "shine 1.1s ease-in-out 2.3s 1 both",
         kenburns: "kenburns 26s ease-in-out infinite alternate",
         floatUp: "floatUp 14s linear infinite",
         nudgeDown: "nudgeDown 1.4s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate",
