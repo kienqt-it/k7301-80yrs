@@ -32,6 +32,7 @@ export default function Hero() {
     >
       <img
         src={heroImage}
+        fetchpriority="high"
         alt="Không khí tri ân mái trường Tân Trào trong ánh chiều vàng"
         className="absolute inset-0 -z-20 h-full w-full origin-bottom animate-kenburns object-cover object-bottom"
         style={{ filter: "sepia(0.3) saturate(1.05) contrast(1.02)" }}
@@ -112,7 +113,7 @@ export default function Hero() {
 
           <motion.p
             variants={item}
-            className="mt-6 max-w-[32ch] break-words text-base leading-8 text-white/88 sm:max-w-2xl sm:text-lg"
+            className="mt-6 max-w-[32ch] break-words text-base leading-8 text-white/90 sm:max-w-2xl sm:text-lg"
           >
             Cùng nhau góp một phần nghĩa tình của tập thể K7301, hướng tới Lễ
             kỷ niệm 80 năm thành lập Trường THPT Tân Trào 1946 - 2026.
@@ -131,7 +132,7 @@ export default function Hero() {
             </a>
             <a
               href="#thu-ngo"
-              className="inline-flex items-center justify-center gap-2 rounded-md border border-white/50 bg-white/10 px-5 py-3 text-sm font-semibold text-white backdrop-blur transition hover:bg-white/18"
+              className="inline-flex items-center justify-center gap-2 rounded-md border border-white/50 bg-white/10 px-5 py-3 text-sm font-semibold text-white backdrop-blur transition hover:bg-white/20"
             >
               <ArrowDown className="h-5 w-5" aria-hidden="true" />
               Đọc thư ngỏ

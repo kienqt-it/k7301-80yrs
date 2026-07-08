@@ -197,7 +197,7 @@ export default function Leaderboard({ contributions, limit = 3 }) {
             transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
             className="overflow-hidden"
           >
-            <div className="mt-4 rounded-xl border border-heritage-gold/25 bg-white/8 p-4 backdrop-blur sm:p-5">
+            <div className="mt-4 rounded-xl border border-heritage-gold/25 bg-white/10 p-4 backdrop-blur sm:p-5">
               <div className="flex items-start justify-between gap-3">
                 <p className="text-sm font-bold text-white">
                   Hạng {selectedGroup.rank}

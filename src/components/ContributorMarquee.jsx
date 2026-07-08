@@ -46,6 +46,7 @@ export default function ContributorMarquee({ contributions }) {
 
         <div
           ref={viewportRef}
+          role="group"
           className="marquee-mask marquee-frame relative mt-8 overflow-hidden rounded-xl border border-heritage-gold/15"
           style={{ height: viewportHeight }}
           aria-label="Thiệp lời chúc của các thành viên đã đóng góp, trôi lên như hoa đăng, kéo thả và chạm để xem"
@@ -53,7 +54,7 @@ export default function ContributorMarquee({ contributions }) {
           <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-3 text-center">
             <Heart className="h-20 w-20 text-heritage-gold/10 sm:h-28 sm:w-28" aria-hidden="true" />
             {cards.length <= 2 && (
-              <p className="max-w-xs font-hand text-xl text-heritage-goldSoft/40">
+              <p className="max-w-xs font-hand text-xl text-heritage-goldSoft/70">
                 Hãy là người tiếp theo gửi lời chúc yêu thương...
               </p>
             )}

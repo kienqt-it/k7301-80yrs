@@ -108,7 +108,7 @@ export default function OpenLetter({ targetAmount }) {
                 {formatCurrency(targetAmount)}
                 <span className="ml-2 text-lg font-medium text-white/70">đồng</span>
               </p>
-              <p className="mt-3 text-sm leading-7 text-white/72">
+              <p className="mt-3 text-sm leading-7 text-white/70">
                 Cùng nhà trường chuẩn bị cho sự kiện trọng đại, đồng thời lưu lại
                 dấu ấn tri ân của tập thể K7301.
               </p>
@@ -138,7 +138,7 @@ export default function OpenLetter({ targetAmount }) {
                         <h3 className="text-base font-bold text-white">
                           {goal.title}
                         </h3>
-                        <p className="mt-1.5 text-sm leading-6 text-white/68">
+                        <p className="mt-1.5 text-sm leading-6 text-white/70">
                           {goal.text}
                         </p>
                       </div>

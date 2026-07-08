@@ -27,7 +27,7 @@ export default function Header({ onShowContributors }) {
             <span className="block truncate text-sm font-semibold tracking-wide">
               K7301
             </span>
-            <span className="block truncate text-xs text-white/76">
+            <span className="block truncate text-xs text-white/75">
               Tri ân mái trường Tân Trào
             </span>
           </span>
@@ -38,7 +38,7 @@ export default function Header({ onShowContributors }) {
             <a
               key={href}
               href={`#${href}`}
-              className="rounded-md px-3 py-2 text-sm font-medium text-white/82 transition hover:bg-white/10 hover:text-white"
+              className="rounded-md px-3 py-2 text-sm font-medium text-white/80 transition hover:bg-white/10 hover:text-white"
             >
               {label}
             </a>

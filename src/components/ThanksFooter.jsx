@@ -60,7 +60,7 @@ export default function ThanksFooter() {
           <h2 className="mt-4 text-3xl font-bold leading-tight sm:text-4xl">
             Xin cảm ơn những tấm lòng của tập thể K7301
           </h2>
-          <p className="mx-auto mt-5 max-w-3xl text-base leading-8 text-white/82">
+          <p className="mx-auto mt-5 max-w-3xl text-base leading-8 text-white/80">
             Mỗi đóng góp là một lời tri ân gửi tới thầy cô, bạn bè và mái trường
             Tân Trào thân yêu. K7301 cùng giữ gìn ký ức đẹp, tiếp nối truyền
             thống và góp phần làm nên một ngày hội 80 năm thật ý nghĩa.
@@ -98,7 +98,7 @@ export default function ThanksFooter() {
             </a>
 
             <nav
-              className="flex flex-wrap items-center justify-center gap-x-7 gap-y-2 text-sm text-white/72"
+              className="flex flex-wrap items-center justify-center gap-x-7 gap-y-2 text-sm text-white/70"
               aria-label="Liên kết cuối trang"
             >
               {footerLinks.map(([label, href]) => (
@@ -113,7 +113,7 @@ export default function ThanksFooter() {
             </nav>
           </div>
 
-          <p className="border-t border-white/10 pt-5 text-center text-xs leading-6 text-white/55">
+          <p className="border-t border-white/10 pt-5 text-center text-xs leading-6 text-white/65">
             © 2026 Ban liên lạc K7301 · Hướng tới Lễ kỷ niệm 80 năm thành lập
             Trường THPT Tân Trào (1946 – 2026)
           </p>

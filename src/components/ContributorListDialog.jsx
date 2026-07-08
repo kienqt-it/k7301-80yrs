@@ -52,11 +52,13 @@ export default function ContributorListDialog({ open, onClose, contributions }) 
     };
     document.addEventListener("keydown", onKeyDown);
     const previousOverflow = document.body.style.overflow;
+    const previousFocus = document.activeElement;
     document.body.style.overflow = "hidden";
     panelRef.current?.focus();
     return () => {
       document.removeEventListener("keydown", onKeyDown);
       document.body.style.overflow = previousOverflow;
+      if (previousFocus instanceof HTMLElement) previousFocus.focus();
     };
   }, [open, onClose]);
 
@@ -187,7 +189,7 @@ export default function ContributorListDialog({ open, onClose, contributions }) 
                               )}
                             </>
                           ) : (
-                            <ul className="mt-2 space-y-2.5 border-l-2 border-heritage-gold/25 pl-3">
+                            <ul className="mt-2 space-y-2.5 border-l border-heritage-gold/30 pl-3">
                               {member.entries.map((entry, entryIndex) => (
                                 <li key={entry.id ?? entryIndex}>
                                   {entry.note && (
