@@ -103,7 +103,7 @@ const initialForm = {
 };
 
 const inputClass =
-  "mt-2 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-heritage-gold focus:ring-4 focus:ring-heritage-gold/15";
+  "mt-2 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition placeholder:text-slate-500 focus:border-heritage-gold focus:ring-4 focus:ring-heritage-gold/15";
 
 export default function DonateSection({ onConfirmed }) {
   const [restored] = useState(loadSavedSubmission);
@@ -238,7 +238,12 @@ export default function DonateSection({ onConfirmed }) {
     event.preventDefault();
     const amount = normalizeAmount(form.amount);
 
-    if (!form.name.trim() || !form.phone.trim() || amount <= 0) return;
+    // Input đã có required, nhưng "0" hay toàn ký tự lạ vẫn lọt qua — báo rõ
+    // thay vì im lặng không phản hồi khi bấm nút.
+    if (!form.name.trim() || !form.phone.trim() || amount <= 0) {
+      setErrorMsg("Vui lòng nhập số tiền hợp lệ (lớn hơn 0).");
+      return;
+    }
 
     setSubmitting(true);
     setErrorMsg("");
@@ -393,6 +398,7 @@ export default function DonateSection({ onConfirmed }) {
                         name="name"
                         value={form.name}
                         onChange={updateField}
+                        autoComplete="name"
                         placeholder="Nguyễn Văn A"
                         className={inputClass}
                         required
@@ -405,8 +411,11 @@ export default function DonateSection({ onConfirmed }) {
                       </span>
                       <input
                         name="phone"
+                        type="tel"
+                        inputMode="tel"
                         value={form.phone}
                         onChange={updateField}
+                        autoComplete="tel"
                         placeholder="09xx xxx xxx"
                         className={inputClass}
                         required
@@ -432,7 +441,7 @@ export default function DonateSection({ onConfirmed }) {
                             key={amount}
                             type="button"
                             onClick={() => pickAmount(amount)}
-                            className="rounded-full border border-slate-200 px-4 py-1.5 text-xs font-semibold text-slate-600 transition hover:border-heritage-gold hover:text-heritage-blueDark"
+                            className="min-h-9 rounded-full border border-slate-200 px-4 py-1.5 text-xs font-semibold text-slate-600 transition hover:border-heritage-gold hover:text-heritage-blueDark"
                           >
                             {amount.toLocaleString("vi-VN")}
                           </button>
@@ -464,7 +473,10 @@ export default function DonateSection({ onConfirmed }) {
                   </button>
 
                   {errorMsg && (
-                    <p className="mt-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-heritage-red">
+                    <p
+                      role="alert"
+                      className="mt-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-heritage-red"
+                    >
                       {errorMsg}
                     </p>
                   )}
@@ -491,6 +503,15 @@ export default function DonateSection({ onConfirmed }) {
             >
               <p className="text-xs font-bold uppercase leading-5 tracking-[0.18em] text-heritage-sepia">
                 Bước 2 · Quét mã chuyển khoản
+              </p>
+
+              {/* Vùng thông báo cho screen reader: chỉ đọc khi ĐỔI pha, không bọc
+                  đồng hồ đếm ngược (sẽ bị đọc lại mỗi giây suốt 10 phút) */}
+              <p className="sr-only" role="status">
+                {phase === "waiting" &&
+                  "Mã QR chuyển khoản đã sẵn sàng, cuộn xuống để quét. Ban liên lạc sẽ xác nhận trong khoảng 10 phút."}
+                {phase === "confirmed" &&
+                  "Đóng góp của bạn đã được xác nhận. Xin cảm ơn!"}
               </p>
 
               {phase === "form" && (
@@ -530,11 +551,9 @@ export default function DonateSection({ onConfirmed }) {
                     (mã đối chiếu của bạn kèm lời nhắn)
                   </p>
 
-                  <div
-                    className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3"
-                    role="status"
-                    aria-live="polite"
-                  >
+                  {/* Không đặt aria-live ở đây: đồng hồ đổi mỗi giây sẽ spam screen
+                      reader; việc đổi pha đã được vùng role="status" phía trên đọc */}
+                  <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
                     <p className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-center text-sm font-semibold text-amber-800">
                       <Hourglass className="h-4 w-4 shrink-0" aria-hidden="true" />
                       <span>Chờ Ban liên lạc xác nhận:</span>

@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Heart, ListChecks } from "lucide-react";
 import SectionReveal from "./SectionReveal.jsx";
@@ -26,6 +26,20 @@ export default function ContributorMarquee({ contributions }) {
   const [draggingId, setDraggingId] = useState(null);
   const viewportHeight = Math.min(560, Math.max(320, cards.length * 50 + 260));
 
+  // Kéo-thả chỉ dành cho con trỏ chuột. Trên màn cảm ứng, drag + touch-action:none
+  // biến cả khoang thiệp (cao tới 560px) thành vùng chặn cuộn trang — ngón tay
+  // vuốt trúng thiệp là mắc kẹt. Touch giữ lại chạm-để-thấy-nhịp-tim, vuốt thì
+  // cuộn trang như thường (pan-y).
+  const [coarsePointer, setCoarsePointer] = useState(false);
+  useEffect(() => {
+    const query = window.matchMedia("(pointer: coarse)");
+    const update = () => setCoarsePointer(query.matches);
+    update();
+    query.addEventListener("change", update);
+    return () => query.removeEventListener("change", update);
+  }, []);
+  const dragEnabled = !coarsePointer;
+
   return (
     <SectionReveal className="relative overflow-hidden bg-heritage-blueDark px-4 py-16 text-white sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
@@ -49,7 +63,11 @@ export default function ContributorMarquee({ contributions }) {
           role="group"
           className="marquee-mask marquee-frame relative mt-8 overflow-hidden rounded-xl border border-heritage-gold/15"
           style={{ height: viewportHeight }}
-          aria-label="Thiệp lời chúc của các thành viên đã đóng góp, trôi lên như hoa đăng, kéo thả và chạm để xem"
+          aria-label={
+            dragEnabled
+              ? "Thiệp lời chúc của các thành viên đã đóng góp, trôi lên như hoa đăng, kéo thả và bấm để xem"
+              : "Thiệp lời chúc của các thành viên đã đóng góp, trôi lên như hoa đăng, chạm để xem"
+          }
         >
           <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-3 text-center">
             <Heart className="h-20 w-20 text-heritage-gold/10 sm:h-28 sm:w-28" aria-hidden="true" />
@@ -75,7 +93,7 @@ export default function ContributorMarquee({ contributions }) {
                 }}
               >
                 <motion.article
-                  drag
+                  drag={dragEnabled}
                   dragConstraints={viewportRef}
                   dragElastic={0.2}
                   onDragStart={() => setDraggingId(person.id)}
@@ -89,8 +107,10 @@ export default function ContributorMarquee({ contributions }) {
                   }
                   transition={{ duration: 0.8, ease: "easeInOut" }}
                   onAnimationComplete={() => setPulsingId((current) => (current === person.id ? null : current))}
-                  style={{ touchAction: "none" }}
-                  className="w-52 cursor-grab touch-none select-none rounded-lg border border-heritage-gold/40 bg-heritage-paper/95 p-4 text-heritage-blueDark shadow-letter active:cursor-grabbing sm:w-60"
+                  style={{ touchAction: dragEnabled ? "none" : "pan-y" }}
+                  className={`w-52 select-none rounded-lg border border-heritage-gold/40 bg-heritage-paper/95 p-4 text-heritage-blueDark shadow-letter sm:w-60 ${
+                    dragEnabled ? "cursor-grab active:cursor-grabbing" : ""
+                  }`}
                 >
                   <div className="flex items-center gap-2">
                     <Heart
@@ -110,8 +130,9 @@ export default function ContributorMarquee({ contributions }) {
         </div>
 
         <p className="mx-auto mt-6 max-w-2xl text-center text-sm leading-7 text-white/70">
-          Thiệp trôi lên rồi mờ dần như hoa đăng thả trôi — kéo một tấm đi bất kỳ đâu (chuột hoặc
-          chạm tay), rồi chạm vào để xem nhịp yêu thương đập lên từ đó.
+          {dragEnabled
+            ? "Thiệp trôi lên rồi mờ dần như hoa đăng thả trôi — kéo một tấm đi bất kỳ đâu, rồi bấm vào để xem nhịp yêu thương đập lên từ đó."
+            : "Thiệp trôi lên rồi mờ dần như hoa đăng thả trôi — chạm vào một tấm để xem nhịp yêu thương đập lên từ đó."}
         </p>
       </div>
     </SectionReveal>
