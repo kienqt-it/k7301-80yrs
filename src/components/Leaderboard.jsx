@@ -22,15 +22,35 @@ const RANK_STYLES = {
 
 // Cộng dồn theo thành viên: memberKey (server tính từ họ tên + SĐT);
 // dữ liệu chưa có memberKey thì tạm gộp theo tên như trước.
+// Xếp hạng kiểu thi đấu (1-1-3): góp bằng tiền nhau là đồng hạng, hạng kế
+// tiếp bị nhảy cách; trong nhóm đồng hạng, ai đóng góp sớm hơn đứng trước.
 function aggregateTop(contributions, limit) {
   const totals = new Map();
   for (const item of contributions) {
     const key = item.memberKey ?? item.name.trim().toLowerCase();
-    const current = totals.get(key) || { key, name: item.name.trim(), amount: 0 };
+    const current = totals.get(key) || { key, name: item.name.trim(), amount: 0, since: "" };
     current.amount += item.amount;
+    const date = item.confirmed_at || item.paidAt || "";
+    if (date && (!current.since || date < current.since)) current.since = date;
     totals.set(key, current);
   }
-  return [...totals.values()].sort((a, b) => b.amount - a.amount).slice(0, limit);
+
+  const sorted = [...totals.values()].sort((a, b) => {
+    if (b.amount !== a.amount) return b.amount - a.amount;
+    if (a.since !== b.since) return a.since < b.since ? -1 : 1;
+    return a.name.localeCompare(b.name, "vi");
+  });
+
+  let rank = 0;
+  sorted.forEach((entry, index) => {
+    if (index === 0 || entry.amount !== sorted[index - 1].amount) rank = index + 1;
+    entry.rank = rank;
+    entry.tied =
+      (index > 0 && sorted[index - 1].amount === entry.amount) ||
+      (index + 1 < sorted.length && sorted[index + 1].amount === entry.amount);
+  });
+
+  return sorted.slice(0, limit);
 }
 
 function initialsOf(name) {
@@ -57,7 +77,7 @@ export default function Leaderboard({ contributions, limit = 3 }) {
 
       <ol className="mt-8 grid grid-cols-3 items-end gap-3 sm:gap-5">
         {slots.map((entry, slotIndex) => {
-          const rank = top.indexOf(entry) + 1;
+          const rank = entry.rank;
           const style = RANK_STYLES[rank];
           const isFirst = rank === 1;
           return (
@@ -91,6 +111,11 @@ export default function Leaderboard({ contributions, limit = 3 }) {
               <p className="w-full truncate text-center text-xs font-bold text-heritage-goldSoft sm:text-sm">
                 {formatCurrency(entry.amount)} đ
               </p>
+              {entry.tied && (
+                <p className="mt-0.5 text-[10px] font-bold uppercase tracking-[0.14em] text-white/55">
+                  đồng hạng
+                </p>
+              )}
               <div
                 className={`mt-3 grid w-full place-items-center rounded-t-lg ${style.pedestal}`}
               >

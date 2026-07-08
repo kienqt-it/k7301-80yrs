@@ -26,26 +26,50 @@ export default function AdminApp() {
     return false;
   }, []);
 
-  const loadContributions = useCallback(async () => {
-    setLoading(true);
-    setListError("");
-    try {
-      const [filteredRes, allRes] = await Promise.all([
-        apiFetch(`/api/admin/contributions${status ? `?status=${status}` : ""}`),
-        apiFetch("/api/admin/contributions"),
-      ]);
-      setRows(await filteredRes.json());
-      setAllRows(await allRes.json());
-      setLoggedIn(true);
-    } catch (err) {
-      if (!handleAuthError(err)) setListError(err.message || "Không tải được danh sách");
-    } finally {
-      setLoading(false);
-    }
-  }, [status, handleAuthError]);
+  // silent = làm mới nền: không hiện "Đang tải..." và bỏ qua lỗi mạng lặt vặt
+  // (lần poll sau sẽ thử lại), chỉ lỗi đăng nhập mới xử lý.
+  const loadContributions = useCallback(
+    async ({ silent = false } = {}) => {
+      if (!silent) {
+        setLoading(true);
+        setListError("");
+      }
+      try {
+        const [filteredRes, allRes] = await Promise.all([
+          apiFetch(`/api/admin/contributions${status ? `?status=${status}` : ""}`),
+          apiFetch("/api/admin/contributions"),
+        ]);
+        setRows(await filteredRes.json());
+        setAllRows(await allRes.json());
+        setLoggedIn(true);
+      } catch (err) {
+        if (!handleAuthError(err) && !silent) {
+          setListError(err.message || "Không tải được danh sách");
+        }
+      } finally {
+        if (!silent) setLoading(false);
+      }
+    },
+    [status, handleAuthError],
+  );
 
   useEffect(() => {
     if (loggedIn) loadContributions();
+  }, [loggedIn, loadContributions]);
+
+  // Tự làm mới để khoản đóng góp mới gửi lên hiện ra không cần tải lại trang:
+  // poll âm thầm mỗi 15 giây, và làm mới ngay khi admin quay lại tab.
+  useEffect(() => {
+    if (!loggedIn) return undefined;
+    const intervalId = window.setInterval(() => loadContributions({ silent: true }), 15000);
+    const onVisible = () => {
+      if (!document.hidden) loadContributions({ silent: true });
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => {
+      window.clearInterval(intervalId);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
   }, [loggedIn, loadContributions]);
 
   const summary = useMemo(() => {
