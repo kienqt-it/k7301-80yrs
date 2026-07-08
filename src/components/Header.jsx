@@ -1,3 +1,4 @@
+import { motion, useScroll, useSpring } from "framer-motion";
 import { HeartHandshake, Landmark, Users } from "lucide-react";
 
 const navItems = [
@@ -7,6 +8,14 @@ const navItems = [
 ];
 
 export default function Header({ onShowContributors }) {
+  // Sợi chỉ vàng chạy theo tiến độ cuộn trang — thay thanh progress bar thô
+  const { scrollYProgress } = useScroll();
+  const threadProgress = useSpring(scrollYProgress, {
+    stiffness: 120,
+    damping: 28,
+    restDelta: 0.001,
+  });
+
   return (
     <header className="fixed inset-x-0 top-0 z-50 bg-heritage-blueDark/75 text-white backdrop-blur-xl">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
@@ -63,7 +72,13 @@ export default function Header({ onShowContributors }) {
           </a>
         </div>
       </div>
-      <div className="gold-rule h-px w-full" aria-hidden="true" />
+      <div className="relative" aria-hidden="true">
+        <div className="gold-rule h-px w-full" />
+        <motion.div
+          className="absolute inset-x-0 top-0 h-[2px] origin-left bg-heritage-gold shadow-[0_0_8px_rgba(212,175,55,0.7)]"
+          style={{ scaleX: threadProgress }}
+        />
+      </div>
     </header>
   );
 }

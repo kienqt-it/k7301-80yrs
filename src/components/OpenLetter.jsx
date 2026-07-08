@@ -74,14 +74,16 @@ export default function OpenLetter({ targetAmount }) {
 
             <div className="relative z-10 mt-8 flex items-end justify-between gap-4">
               <div
-                className="grid h-24 w-24 shrink-0 -rotate-12 place-items-center rounded-full border-2 border-heritage-red/50 text-center text-[9px] font-bold uppercase leading-tight tracking-[0.14em] text-heritage-red/70"
+                className="wax-seal grid h-24 w-24 shrink-0 -rotate-12 place-items-center rounded-full text-center text-[9px] font-bold uppercase leading-tight tracking-[0.14em] text-heritage-goldSoft"
                 aria-hidden="true"
               >
-                K7301
-                <br />
-                Tân Trào
-                <br />
-                80 năm
+                <span className="grid h-[4.7rem] w-[4.7rem] place-items-center rounded-full border border-heritage-goldSoft/40">
+                  K7301
+                  <br />
+                  Tân Trào
+                  <br />
+                  80 năm
+                </span>
               </div>
               <div className="text-right">
                 <p className="font-display text-sm italic text-slate-500">

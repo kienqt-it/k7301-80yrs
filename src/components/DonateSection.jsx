@@ -14,6 +14,7 @@ import {
   XCircle,
 } from "lucide-react";
 import SectionReveal from "./SectionReveal.jsx";
+import TornEdge from "./TornEdge.jsx";
 import { formatCurrency, normalizeAmount } from "../utils/format.js";
 
 const BANK_ID = "BIDV"; // TMCP Đầu tư & Phát triển Việt Nam
@@ -300,8 +301,9 @@ export default function DonateSection({ onConfirmed }) {
   return (
     <SectionReveal
       id="form-gop"
-      className="paper-texture bg-heritage-paper px-4 py-16 sm:px-6 lg:px-8"
+      className="paper-texture relative bg-heritage-paper px-4 py-16 sm:px-6 lg:px-8"
     >
+      <TornEdge className="text-heritage-blueDark" />
       <div className="mx-auto max-w-6xl">
         <div className="max-w-2xl">
           <p className="flex items-center gap-2 text-sm font-bold uppercase leading-6 tracking-[0.16em] text-heritage-red">
@@ -455,7 +457,7 @@ export default function DonateSection({ onConfirmed }) {
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="mt-8 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-heritage-gold px-5 py-3.5 text-sm font-bold text-heritage-blueDark shadow-sm transition hover:bg-heritage-goldSoft disabled:cursor-not-allowed disabled:opacity-60"
+                    className="mt-8 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-heritage-gold px-5 py-3.5 text-sm font-bold text-heritage-blueDark shadow-sm transition hover:-translate-y-0.5 hover:bg-heritage-goldSoft active:translate-y-0 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     <Send className="h-4 w-4" aria-hidden="true" />
                     {submitting ? "Đang gửi..." : "Ghi nhận đóng góp"}

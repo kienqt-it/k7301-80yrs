@@ -3,6 +3,7 @@ import ReactCountUp from "react-countup";
 import { motion, useInView } from "framer-motion";
 import { Banknote, ChevronRight, PartyPopper, Target, TrendingUp, Users } from "lucide-react";
 import SectionReveal from "./SectionReveal.jsx";
+import TornEdge from "./TornEdge.jsx";
 import Fireworks from "./Fireworks.jsx";
 import { formatCurrency } from "../utils/format.js";
 
@@ -21,7 +22,11 @@ export default function ContributionStats({
   const celebrate = isGoalReached && inView;
 
   return (
-    <SectionReveal id="dong-gop" className="bg-heritage-blueDark px-4 py-16 text-white sm:px-6 lg:px-8">
+    <SectionReveal
+      id="dong-gop"
+      className="relative bg-heritage-blueDark px-4 py-16 text-white sm:px-6 lg:px-8"
+    >
+      <TornEdge className="text-heritage-paper" />
       <div ref={sectionRef} className="relative mx-auto max-w-7xl">
         <Fireworks active={celebrate} />
         <div className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">

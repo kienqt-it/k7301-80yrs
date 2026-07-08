@@ -1,5 +1,15 @@
 import { HeartHandshake, Landmark, School } from "lucide-react";
 import SectionReveal from "./SectionReveal.jsx";
+import TornEdge from "./TornEdge.jsx";
+
+// Đốm hoa đăng vàng trôi lên nền footer — nối lại motif thiệp hoa đăng phía trên
+const emberParticles = Array.from({ length: 9 }, (_, i) => ({
+  left: `${(i * 137 + 40) % 100}%`,
+  bottom: `${(i * 47) % 30}%`,
+  size: 3 + ((i * 11) % 4),
+  duration: `${12 + ((i * 31) % 9)}s`,
+  delay: `${(i * 17) % 12}s`,
+}));
 
 const footerLinks = [
   ["Thư ngỏ & mục tiêu", "thu-ngo"],
@@ -10,6 +20,7 @@ const footerLinks = [
 export default function ThanksFooter() {
   return (
     <div className="relative overflow-hidden bg-heritage-blueDark text-white">
+      <TornEdge className="z-10 text-heritage-paper" />
       <div
         className="pointer-events-none absolute inset-0"
         style={{
@@ -18,6 +29,24 @@ export default function ThanksFooter() {
         }}
         aria-hidden="true"
       />
+
+      <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+        {emberParticles.map((particle, index) => (
+          <span
+            key={index}
+            className="absolute animate-floatUp rounded-full bg-heritage-goldSoft/70"
+            style={{
+              left: particle.left,
+              bottom: particle.bottom,
+              width: particle.size,
+              height: particle.size,
+              animationDuration: particle.duration,
+              animationDelay: particle.delay,
+              boxShadow: "0 0 8px rgba(246, 230, 168, 0.6)",
+            }}
+          />
+        ))}
+      </div>
 
       <SectionReveal className="relative px-4 pt-16 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-4xl text-center">
@@ -38,7 +67,7 @@ export default function ThanksFooter() {
           </p>
           <a
             href="#form-gop"
-            className="mt-8 inline-flex items-center justify-center gap-2 rounded-lg bg-heritage-gold px-6 py-3 text-sm font-bold text-heritage-blueDark shadow-sm transition hover:bg-heritage-goldSoft"
+            className="mt-8 inline-flex items-center justify-center gap-2 rounded-lg bg-heritage-gold px-6 py-3 text-sm font-bold text-heritage-blueDark shadow-sm transition hover:-translate-y-0.5 hover:bg-heritage-goldSoft active:translate-y-0 active:scale-[0.98]"
           >
             <HeartHandshake className="h-5 w-5" aria-hidden="true" />
             Đồng hành cùng K7301

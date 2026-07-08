@@ -124,7 +124,7 @@ export default function Hero() {
           >
             <a
               href="#form-gop"
-              className="inline-flex items-center justify-center gap-2 rounded-md bg-heritage-gold px-5 py-3 text-sm font-bold text-heritage-blueDark shadow-soft transition hover:bg-heritage-goldSoft"
+              className="inline-flex items-center justify-center gap-2 rounded-md bg-heritage-gold px-5 py-3 text-sm font-bold text-heritage-blueDark shadow-soft transition hover:-translate-y-0.5 hover:bg-heritage-goldSoft active:translate-y-0 active:scale-[0.98]"
             >
               <HeartHandshake className="h-5 w-5" aria-hidden="true" />
               Ghi nhận đóng góp
