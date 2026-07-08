@@ -164,7 +164,7 @@ export default function Leaderboard({ contributions, limit = 3 }) {
                   {formatCurrency(group.amount)} đ
                 </p>
                 {group.members.length > 1 && (
-                  <p className="mt-0.5 text-[10px] font-bold uppercase tracking-[0.14em] text-white/55">
+                  <p className="mt-0.5 text-[10px] font-bold uppercase tracking-[0.14em] text-white/75">
                     đồng hạng · {group.members.length} người
                   </p>
                 )}
@@ -200,17 +200,17 @@ export default function Leaderboard({ contributions, limit = 3 }) {
                       đồng hạng · {selectedGroup.members.length} người
                     </span>
                   )}
-                  <span className="mt-0.5 block text-xs font-semibold text-white/65">
+                  <span className="mt-0.5 block text-xs font-semibold text-white/80">
                     {formatCurrency(selectedGroup.amount)} đ mỗi người
                   </span>
                 </p>
                 <button
                   type="button"
                   onClick={() => setSelectedRank(null)}
-                  className="grid h-7 w-7 shrink-0 place-items-center rounded-full border border-white/20 bg-white/10 text-white/80 transition hover:bg-white/20 hover:text-white"
+                  className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-white/20 bg-white/10 text-white/80 transition hover:bg-white/20 hover:text-white"
                   aria-label="Đóng danh sách hạng"
                 >
-                  <X className="h-3.5 w-3.5" aria-hidden="true" />
+                  <X className="h-4 w-4" aria-hidden="true" />
                 </button>
               </div>
               <ul className="mt-3 divide-y divide-white/10">

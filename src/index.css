@@ -13,6 +13,8 @@
 
 html {
   scroll-behavior: smooth;
+  /* Header cố định cao ~64px: chừa chỗ để anchor không bị che tiêu đề */
+  scroll-padding-top: 84px;
 }
 
 body {
@@ -32,6 +34,17 @@ h1,
 h2,
 h3 {
   font-family: "Playfair Display", Georgia, serif;
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+/* Focus ring thống nhất toàn trang: vàng heritage, nhìn rõ trên cả nền sáng lẫn tối */
+:focus-visible {
+  outline: 2px solid #d4af37;
+  outline-offset: 2px;
 }
 
 /* Vân giấy cũ: nhiễu hạt mảnh phủ lên màu nền hiện có của section */

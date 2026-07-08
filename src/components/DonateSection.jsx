@@ -547,7 +547,7 @@ export default function DonateSection({ onConfirmed }) {
                   </div>
 
                   <div
-                    className="mt-8 flex items-center gap-3 text-center text-[11px] font-bold uppercase leading-4 tracking-[0.16em] text-slate-400"
+                    className="mt-8 flex items-center gap-3 text-center text-[11px] font-bold uppercase leading-4 tracking-[0.16em] text-slate-500"
                     aria-hidden="true"
                   >
                     <span className="h-px flex-1 bg-slate-200" />
@@ -572,7 +572,7 @@ export default function DonateSection({ onConfirmed }) {
                             <button
                               type="button"
                               onClick={() => copyValue(label, value)}
-                              className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-slate-200 bg-white text-slate-500 transition hover:border-heritage-gold hover:text-heritage-blueDark"
+                              className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-slate-200 bg-white text-slate-500 transition hover:border-heritage-gold hover:text-heritage-blueDark"
                               aria-label={`Sao chép ${label}`}
                               title={`Sao chép ${label}`}
                             >

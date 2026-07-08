@@ -109,7 +109,7 @@ export default function ContributorListDialog({ open, onClose, contributions }) 
                 <button
                   type="button"
                   onClick={onClose}
-                  className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-white/20 bg-white/10 text-white/85 transition hover:bg-white/20 hover:text-white"
+                  className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-white/20 bg-white/10 text-white/85 transition hover:bg-white/20 hover:text-white"
                   aria-label="Đóng danh sách"
                 >
                   <X className="h-4 w-4" aria-hidden="true" />

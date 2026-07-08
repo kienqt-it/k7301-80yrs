@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { ArrowDown, CalendarHeart, HeartHandshake } from "lucide-react";
-import heroImage from "../assets/tan-trao-hero.png";
+import heroImage from "../assets/tan-trao-hero.jpg";
 
 const container = {
   hidden: {},
@@ -128,7 +128,7 @@ export default function Hero() {
         animate={{ opacity: 1 }}
         transition={{ delay: 1.6, duration: 0.8 }}
       >
-        <ArrowDown className="h-6 w-6 animate-bounce" aria-hidden="true" />
+        <ArrowDown className="h-6 w-6 animate-nudgeDown" aria-hidden="true" />
       </motion.a>
     </section>
   );

@@ -54,12 +54,17 @@ export default {
           "85%": { opacity: "0.3" },
           "100%": { transform: "translateY(-46vh)", opacity: "0" },
         },
+        nudgeDown: {
+          "0%": { transform: "translateY(0)" },
+          "100%": { transform: "translateY(7px)" },
+        },
       },
       animation: {
         floatCard: "floatCard 10s ease-in-out infinite",
         shine: "shine 2.8s ease-in-out infinite",
         kenburns: "kenburns 26s ease-in-out infinite alternate",
         floatUp: "floatUp 14s linear infinite",
+        nudgeDown: "nudgeDown 1.4s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate",
       },
     },
   },
