@@ -41,7 +41,7 @@ export default function ContributionStats({
                 <Banknote className="h-5 w-5 text-heritage-goldSoft" aria-hidden="true" />
                 <span className="text-sm font-medium">Đã ghi nhận</span>
               </div>
-              <p className="mt-3 break-words text-2xl font-bold text-heritage-goldSoft sm:text-3xl">
+              <p className="mt-3 break-words font-display text-3xl font-bold text-heritage-goldSoft sm:text-4xl">
                 <CountUp
                   key={total}
                   end={total}
@@ -99,7 +99,15 @@ export default function ContributionStats({
                   Đã hoàn thành mục tiêu K7301!
                 </p>
               ) : (
-                <p className="mt-3 text-xl font-bold">{Math.round(progress)}% mục tiêu K7301</p>
+                <p className="mt-2 flex items-baseline gap-2">
+                  <span className="font-display text-5xl font-bold text-heritage-blueDark sm:text-6xl">
+                    {Math.round(progress)}
+                    <span className="text-2xl sm:text-3xl">%</span>
+                  </span>
+                  <span className="text-base font-semibold text-slate-600">
+                    mục tiêu K7301
+                  </span>
+                </p>
               )}
             </div>
             <p className="text-sm leading-6 text-slate-600">
@@ -110,7 +118,7 @@ export default function ContributionStats({
             </p>
           </div>
 
-          <div className="mt-6 h-5 overflow-hidden rounded-md bg-slate-100">
+          <div className="relative mt-6 h-5 overflow-hidden rounded-md bg-slate-100">
             <motion.div
               className="progress-shine relative h-full rounded-md bg-gradient-to-r from-heritage-red via-heritage-gold to-heritage-blue"
               initial={{ width: "0%" }}
@@ -118,6 +126,14 @@ export default function ContributionStats({
               viewport={{ once: true }}
               transition={{ duration: 1.25, ease: [0.22, 1, 0.36, 1] }}
             />
+            {[25, 50, 75].map((milestone) => (
+              <span
+                key={milestone}
+                className="absolute inset-y-0 w-px bg-heritage-blueDark/15"
+                style={{ left: `${milestone}%` }}
+                aria-hidden="true"
+              />
+            ))}
           </div>
 
           <div className="mt-4 flex flex-col justify-between gap-2 text-sm text-slate-600 sm:flex-row">

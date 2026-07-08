@@ -8,7 +8,7 @@ const navItems = [
 
 export default function Header({ onShowContributors }) {
   return (
-    <header className="fixed inset-x-0 top-0 z-50 border-b border-white/20 bg-heritage-blueDark/75 text-white backdrop-blur-xl">
+    <header className="fixed inset-x-0 top-0 z-50 bg-heritage-blueDark/75 text-white backdrop-blur-xl">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
         <a href="#top" className="flex min-w-0 items-center gap-3">
           <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg border border-heritage-gold/55 bg-white/10">
@@ -63,6 +63,7 @@ export default function Header({ onShowContributors }) {
           </a>
         </div>
       </div>
+      <div className="gold-rule h-px w-full" aria-hidden="true" />
     </header>
   );
 }

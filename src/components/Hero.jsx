@@ -57,6 +57,26 @@ export default function Hero() {
         ))}
       </div>
 
+      {/* Con dấu kỷ niệm 80 năm — đóng xuống như dấu mộc sau khi chữ hiện xong */}
+      <motion.div
+        className="absolute right-4 top-[92px] z-10 sm:right-10 sm:top-28"
+        initial={{ opacity: 0, scale: 1.7, rotate: -24 }}
+        animate={{ opacity: 1, scale: 1, rotate: -10 }}
+        transition={{ delay: 1.15, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+        aria-hidden="true"
+      >
+        <span className="grid h-20 w-20 place-items-center rounded-full border-2 border-heritage-gold/75 p-1 sm:h-28 sm:w-28">
+          <span className="grid h-full w-full place-items-center rounded-full border border-heritage-gold/50 text-center">
+            <span className="font-display text-2xl font-bold leading-none text-heritage-goldSoft sm:text-4xl">
+              80
+              <span className="block text-[8px] font-semibold uppercase tracking-[0.3em] text-heritage-gold sm:text-[10px]">
+                năm
+              </span>
+            </span>
+          </span>
+        </span>
+      </motion.div>
+
       <div className="mx-auto flex min-h-[82svh] max-w-7xl items-center px-4 pb-16 pt-28 sm:px-6 lg:px-8">
         <motion.div
           className="w-full min-w-0 max-w-3xl"

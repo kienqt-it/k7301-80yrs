@@ -118,10 +118,16 @@ export default function Leaderboard({ contributions, limit = 3 }) {
                 onClick={() => toggleGroup(group.rank)}
                 aria-expanded={isSelected}
                 aria-label={`Xem thành viên hạng ${group.rank}`}
-                className={`flex w-full min-w-0 flex-col items-center justify-end rounded-xl pt-2 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-heritage-gold ${
+                className={`relative flex w-full min-w-0 flex-col items-center justify-end rounded-xl pt-2 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-heritage-gold ${
                   isSelected ? "bg-white/10" : "hover:bg-white/5"
                 }`}
               >
+                {isFirst && (
+                  <span
+                    className="pointer-events-none absolute inset-x-0 bottom-0 h-44 bg-[radial-gradient(ellipse_at_50%_100%,rgba(212,175,55,0.3),transparent_70%)]"
+                    aria-hidden="true"
+                  />
+                )}
                 {isFirst && (
                   <Crown
                     className="mb-2 h-6 w-6 text-heritage-gold"
