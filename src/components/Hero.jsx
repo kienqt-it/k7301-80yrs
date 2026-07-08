@@ -134,7 +134,7 @@ export default function Hero() {
           {/* Dòng chữ tay tự viết ra như nét mực trên giấy */}
           {/* pr trên mobile chừa chỗ cho con dấu 80 năm, tránh chữ và dấu chồng nhau */}
           <motion.p
-            className="pr-20 font-hand text-2xl text-heritage-goldSoft sm:pr-0 sm:text-3xl"
+            className="pr-20 font-hand text-2xl text-heritage-goldSoft/85 sm:pr-0 sm:text-3xl"
             initial={
               reduceMotion
                 ? { opacity: 0 }
@@ -157,7 +157,7 @@ export default function Hero() {
 
           {/* Tiêu đề nét dần vào tiêu điểm như ký ức rõ dần */}
           <motion.h1
-            className="mt-3 max-w-xl break-words text-4xl font-bold leading-[1.15] text-white sm:text-5xl lg:text-6xl"
+            className="mt-3 max-w-xl break-words text-3xl font-semibold leading-[1.18] text-white/75 sm:text-4xl lg:text-5xl"
             initial={
               reduceMotion
                 ? { opacity: 0 }
@@ -176,7 +176,7 @@ export default function Hero() {
 
           <motion.p
             {...riseIn(1.15)}
-            className="mt-5 max-w-[34ch] break-words text-base leading-8 text-white/90 sm:max-w-xl sm:text-lg"
+            className="mt-4 max-w-[38ch] break-words text-sm leading-7 text-white/70 sm:max-w-2xl sm:text-base sm:leading-8"
           >
             {/* &nbsp; giữ "80 năm" và niên đại không bị ngắt dòng lơ lửng trên mobile */}
             Tấm lòng của tập thể K7301 gửi về Lễ kỷ niệm 80&nbsp;năm thành lập
@@ -185,7 +185,7 @@ export default function Hero() {
 
           <motion.div
             {...riseIn(1.35)}
-            className="mt-9 flex flex-col items-start gap-5 sm:flex-row sm:items-center sm:gap-7"
+            className="mt-8 flex flex-col items-start gap-5 sm:flex-row sm:items-center sm:gap-7"
           >
             <a
               href="#form-gop"
