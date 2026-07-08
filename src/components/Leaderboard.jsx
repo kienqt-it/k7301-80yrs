@@ -28,9 +28,10 @@ const MAX_NAMES_PER_GROUP = 3;
 
 // Cộng dồn theo thành viên: memberKey (server tính từ họ tên + SĐT);
 // dữ liệu chưa có memberKey thì tạm gộp theo tên như trước.
-// Xếp hạng kiểu thi đấu (1-1-3): góp bằng tiền nhau là đồng hạng — gom chung
-// một nhóm/bục để không ai bị cắt mất; hạng kế tiếp bị nhảy cách theo số
-// người của các nhóm trước. Trong nhóm, ai đóng góp sớm hơn đứng trước.
+// Xếp hạng dày (1-2-3): góp bằng tiền nhau là đồng hạng — gom chung một
+// nhóm/bục để không ai bị cắt mất; nhóm kế tiếp luôn là hạng liền sau
+// (đồng hạng 2 có 4 người thì nhóm sau vẫn là hạng 3, không nhảy cách).
+// Trong nhóm, ai đóng góp sớm hơn đứng trước.
 function aggregateRankGroups(contributions, maxGroups) {
   const totals = new Map();
   for (const item of contributions) {
@@ -49,16 +50,14 @@ function aggregateRankGroups(contributions, maxGroups) {
   });
 
   const groups = [];
-  let assigned = 0;
   for (const entry of sorted) {
     const last = groups[groups.length - 1];
     if (last && last.amount === entry.amount) {
       last.members.push(entry);
     } else {
       if (groups.length === maxGroups) break;
-      groups.push({ rank: assigned + 1, amount: entry.amount, members: [entry] });
+      groups.push({ rank: groups.length + 1, amount: entry.amount, members: [entry] });
     }
-    assigned += 1;
   }
   return groups;
 }
@@ -69,21 +68,13 @@ function initialsOf(name) {
   return picked.map((word) => word[0]?.toUpperCase() ?? "").join("");
 }
 
-function namesSummary(members, max = 2) {
-  const names = members.map((member) => member.name);
-  if (names.length <= max) return names.join(", ");
-  return `${names.slice(0, max).join(", ")} +${names.length - max}`;
-}
-
-export default function Leaderboard({ contributions, limit = 5 }) {
+export default function Leaderboard({ contributions, limit = 3 }) {
   const [selectedRank, setSelectedRank] = useState(null);
-  const groups = aggregateRankGroups(contributions, Math.min(limit, 5));
+  const podium = aggregateRankGroups(contributions, Math.min(limit, PODIUM_GROUPS));
 
-  if (groups.length === 0) return null;
+  if (podium.length === 0) return null;
 
-  const podium = groups.slice(0, PODIUM_GROUPS);
-  const runnersUp = groups.slice(PODIUM_GROUPS);
-  const selectedGroup = groups.find((group) => group.rank === selectedRank) ?? null;
+  const selectedGroup = podium.find((group) => group.rank === selectedRank) ?? null;
 
   const toggleGroup = (rank) =>
     setSelectedRank((current) => (current === rank ? null : rank));
@@ -192,49 +183,6 @@ export default function Leaderboard({ contributions, limit = 5 }) {
           );
         })}
       </ol>
-
-      {runnersUp.length > 0 && (
-        <ol className="mt-4 space-y-2">
-          {runnersUp.map((group, index) => {
-            const isSelected = selectedRank === group.rank;
-            return (
-              <motion.li
-                key={group.rank}
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.4 }}
-                transition={{ duration: 0.5, delay: 0.5 + index * 0.1 }}
-              >
-                <button
-                  type="button"
-                  onClick={() => toggleGroup(group.rank)}
-                  aria-expanded={isSelected}
-                  className={`flex w-full items-center gap-3 rounded-lg border px-4 py-2.5 text-left transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-heritage-gold ${
-                    isSelected
-                      ? "border-heritage-gold/50 bg-white/10"
-                      : "border-white/12 bg-white/5 hover:border-heritage-gold/35 hover:bg-white/8"
-                  }`}
-                >
-                  <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-white/25 bg-white/10 font-display text-sm font-bold text-white/85">
-                    {group.rank}
-                  </span>
-                  <span className="min-w-0 flex-1 truncate text-sm font-semibold text-white">
-                    {namesSummary(group.members)}
-                  </span>
-                  {group.members.length > 1 && (
-                    <span className="shrink-0 rounded-full bg-heritage-gold/15 px-2 py-0.5 text-[11px] font-semibold text-heritage-goldSoft">
-                      {group.members.length} người
-                    </span>
-                  )}
-                  <span className="shrink-0 text-sm font-bold text-heritage-goldSoft">
-                    {formatCurrency(group.amount)} đ
-                  </span>
-                </button>
-              </motion.li>
-            );
-          })}
-        </ol>
-      )}
 
       <AnimatePresence>
         {selectedGroup && (
