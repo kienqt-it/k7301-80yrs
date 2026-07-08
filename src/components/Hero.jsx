@@ -11,11 +11,14 @@ import heroImage from "../assets/tan-trao-hero.jpg";
 const EASE_OUT = [0.22, 1, 0.36, 1];
 
 /*
- * Nhịp mở màn "ký ức hiện về" — một chuỗi nghi thức duy nhất:
- * 0.0s ánh giấy rút đi (ảnh cũ "tráng" dần) → 0.2s dòng chữ tay tự viết
- * → 0.85s tiêu đề nét dần → 1.15s câu dẫn → 1.35s nút
- * → 1.7s con dấu đóng xuống + vòng mực loang
- * → 2.2s mũi tên cuộn + vệt sáng lướt qua nút vàng một lần.
+ * Bố cục "bàn viết thư": chữ và ảnh tách hẳn hai vùng, không bao giờ đè lên nhau —
+ * tấm ảnh tập thể là kỷ vật dán băng dính, hiện nguyên vẹn (biển trường, gương mặt);
+ * nền chỉ còn vệt ảnh loang rất mờ làm không khí, không còn là ảnh để đọc.
+ *
+ * Nhịp mở màn: 0.2s tấm ảnh đặt xuống bàn → 0.5s dòng chữ tay tự viết
+ * → 0.95s tiêu đề nét dần → 1.25s câu dẫn → 1.45s nút
+ * → 1.8s con dấu đóng lên góc ảnh + vòng mực loang
+ * → 2.3s mũi tên cuộn + vệt sáng lướt qua nút vàng một lần.
  */
 const riseIn = (delay, distance = 26) => ({
   initial: { opacity: 0, y: distance },
@@ -35,36 +38,31 @@ export default function Hero() {
   const sectionRef = useRef(null);
   const reduceMotion = useReducedMotion();
 
-  // Thị sai khi cuộn rời hero: ảnh nền trôi chậm hơn, nội dung lùi về sau —
+  // Thị sai khi cuộn rời hero: chữ và ảnh trôi lệch nhịp nhau tạo chiều sâu —
   // chỉ transform/opacity, tắt hẳn khi người dùng bật "giảm chuyển động".
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start start", "end start"],
   });
-  const bgY = useTransform(scrollYProgress, [0, 1], ["0%", "9%"]);
-  const fgY = useTransform(scrollYProgress, [0, 1], [0, 80]);
+  const textY = useTransform(scrollYProgress, [0, 1], [0, 90]);
+  const photoY = useTransform(scrollYProgress, [0, 1], [0, 42]);
   const fgOpacity = useTransform(scrollYProgress, [0, 0.75], [1, 0]);
 
   return (
     <section
       ref={sectionRef}
       id="top"
-      className="relative isolate min-h-[82svh] overflow-hidden bg-heritage-blueDark text-white"
+      className="relative isolate overflow-hidden bg-heritage-blueDark text-white"
     >
-      {/* Bọc ảnh trong lớp thị sai; kéo dư 12% phía trên để không hở mép khi ảnh trôi xuống */}
-      <motion.div
-        className="absolute inset-x-0 -top-[12%] bottom-0 -z-20"
-        style={reduceMotion ? undefined : { y: bgY }}
-      >
+      {/* Vệt ảnh loang làm không khí nền: mờ 10%, nhòe mạnh, không còn chi tiết đọc được */}
+      <div className="absolute inset-0 -z-20" aria-hidden="true">
         <img
           src={heroImage}
-          fetchpriority="high"
-          alt="Không khí tri ân mái trường Tân Trào trong ánh chiều vàng"
-          className="h-full w-full origin-bottom animate-kenburns object-cover object-bottom"
-          style={{ filter: "sepia(0.3) saturate(1.05) contrast(1.02)" }}
+          alt=""
+          className="h-full w-full object-cover opacity-10 blur-lg saturate-[0.6]"
         />
-      </motion.div>
-      <div className="hero-vignette absolute inset-0 -z-10" />
+      </div>
+      <div className="hero-backdrop absolute inset-0 -z-10" />
       <div className="absolute inset-x-0 bottom-0 -z-10 h-24 bg-gradient-to-t from-heritage-paper to-transparent" />
 
       <div className="pointer-events-none absolute inset-0 -z-[5]" aria-hidden="true">
@@ -85,56 +83,42 @@ export default function Hero() {
         ))}
       </div>
 
-      {/* Ánh giấy ấm phủ lúc mở trang rồi rút đi — tấm ảnh cũ đang "tráng" dần */}
-      <motion.div
-        className="pointer-events-none absolute inset-0 -z-[4]"
-        style={{
-          background:
-            "linear-gradient(180deg, rgba(253, 241, 215, 0.9) 0%, rgba(255, 250, 240, 0.7) 100%)",
-        }}
-        initial={{ opacity: 0.85 }}
-        animate={{ opacity: 0 }}
-        transition={{ duration: 1.3, ease: "easeOut" }}
-        aria-hidden="true"
-      />
-
-      {/* Con dấu kỷ niệm 80 năm — đóng xuống sau cùng, kèm vòng mực loang một nhịp */}
-      <motion.div
-        className="absolute right-4 top-[92px] z-10 sm:right-10 sm:top-28"
-        initial={{ opacity: 0, scale: 1.7, rotate: -24 }}
-        animate={{ opacity: 1, scale: 1, rotate: -10 }}
-        transition={{ delay: 1.7, duration: 0.4, ease: EASE_OUT }}
-        aria-hidden="true"
-      >
-        <span className="relative grid h-20 w-20 place-items-center rounded-full border-2 border-heritage-gold/75 p-1 sm:h-28 sm:w-28">
-          <motion.span
-            className="absolute inset-0 rounded-full border-2 border-heritage-gold/60"
-            initial={{ opacity: 0, scale: 1 }}
-            animate={{ opacity: [0, 0.65, 0], scale: [1, 1.45, 1.45] }}
-            transition={{ delay: 2.1, duration: 0.8, ease: "easeOut", times: [0, 0.25, 1] }}
-          />
-          <span className="grid h-full w-full place-items-center rounded-full border border-heritage-gold/50 text-center">
-            <span className="font-display text-2xl font-bold leading-none text-heritage-goldSoft sm:text-4xl">
-              80
-              <span className="block text-[8px] font-semibold uppercase tracking-[0.3em] text-heritage-gold sm:text-[10px]">
-                năm
+      <div className="mx-auto grid max-w-7xl items-center gap-12 px-4 pb-20 pt-28 sm:px-6 lg:min-h-[88svh] lg:grid-cols-[minmax(0,1fr)_minmax(0,32rem)] lg:gap-16 lg:pb-24 lg:pt-32 lg:px-8">
+        {/* Cột chữ — luôn nằm trên nền xanh đêm đặc, không bao giờ đè lên ảnh */}
+        <motion.div
+          className="relative min-w-0"
+          style={reduceMotion ? undefined : { y: textY, opacity: fgOpacity }}
+        >
+          {/* Con dấu 80 năm đóng cạnh dòng mở thư, trên nền đặc — không chạm vào ảnh */}
+          <motion.div
+            className="absolute right-0 top-0"
+            initial={{ opacity: 0, scale: 1.7, rotate: -24 }}
+            animate={{ opacity: 1, scale: 1, rotate: -10 }}
+            transition={{ delay: 1.8, duration: 0.4, ease: EASE_OUT }}
+            aria-hidden="true"
+          >
+            <span className="relative grid h-20 w-20 place-items-center rounded-full border-2 border-heritage-gold/75 p-1 sm:h-24 sm:w-24">
+              <motion.span
+                className="absolute inset-0 rounded-full border-2 border-heritage-gold/60"
+                initial={{ opacity: 0, scale: 1 }}
+                animate={{ opacity: [0, 0.65, 0], scale: [1, 1.45, 1.45] }}
+                transition={{ delay: 2.2, duration: 0.8, ease: "easeOut", times: [0, 0.25, 1] }}
+              />
+              <span className="grid h-full w-full place-items-center rounded-full border border-heritage-gold/50 text-center">
+                <span className="font-display text-2xl font-bold leading-none text-heritage-goldSoft sm:text-3xl">
+                  80
+                  <span className="block text-[8px] font-semibold uppercase tracking-[0.3em] text-heritage-gold sm:text-[10px]">
+                    năm
+                  </span>
+                </span>
               </span>
             </span>
-          </span>
-        </span>
-      </motion.div>
+          </motion.div>
 
-      {/* md trở lên: neo khối chữ xuống góc trái-dưới (vùng vignette tối nhất) để
-          biển trường và mặt tiền trong ảnh lộ hoàn toàn, chữ không đè lên chữ */}
-      <div className="mx-auto flex min-h-[82svh] max-w-7xl items-center px-4 pb-16 pt-28 sm:px-6 md:items-end md:pb-20 lg:px-8 lg:pb-24">
-        <motion.div
-          className="w-full min-w-0 max-w-2xl"
-          style={reduceMotion ? undefined : { y: fgY, opacity: fgOpacity }}
-        >
           {/* Dòng chữ tay tự viết ra như nét mực trên giấy */}
           {/* pr trên mobile chừa chỗ cho con dấu 80 năm, tránh chữ và dấu chồng nhau */}
           <motion.p
-            className="pr-20 font-hand text-2xl text-heritage-goldSoft/85 sm:pr-0 sm:text-3xl"
+            className="pr-20 font-hand text-2xl text-heritage-goldSoft sm:pr-24 sm:text-3xl"
             initial={
               reduceMotion
                 ? { opacity: 0 }
@@ -146,10 +130,10 @@ export default function Hero() {
                 : { opacity: 1, clipPath: "inset(-25% -6% -35% -6%)" }
             }
             transition={{
-              delay: 0.2,
+              delay: 0.5,
               duration: 1.15,
               ease: [0.5, 0.05, 0.4, 0.95],
-              opacity: { delay: 0.2, duration: 0.25 },
+              opacity: { delay: 0.5, duration: 0.25 },
             }}
           >
             Tuyên Quang, những mùa phượng đã xa...
@@ -157,7 +141,7 @@ export default function Hero() {
 
           {/* Tiêu đề nét dần vào tiêu điểm như ký ức rõ dần */}
           <motion.h1
-            className="mt-3 max-w-xl break-words text-3xl font-semibold leading-[1.18] text-white/75 sm:text-4xl lg:text-5xl"
+            className="mt-3 max-w-xl break-words text-4xl font-bold leading-[1.16] text-white sm:text-5xl lg:text-[3.4rem]"
             initial={
               reduceMotion
                 ? { opacity: 0 }
@@ -168,15 +152,15 @@ export default function Hero() {
                 ? { opacity: 1 }
                 : { opacity: 1, y: 0, filter: "blur(0px)" }
             }
-            transition={{ delay: 0.85, duration: 0.95, ease: EASE_OUT }}
+            transition={{ delay: 0.95, duration: 0.95, ease: EASE_OUT }}
           >
             {/* &nbsp; giữ từ ghép/danh từ riêng không bị tách khi xuống dòng */}
             Tri ân mái&nbsp;trường Tân&nbsp;Trào
           </motion.h1>
 
           <motion.p
-            {...riseIn(1.15)}
-            className="mt-4 max-w-[38ch] break-words text-sm leading-7 text-white/70 sm:max-w-2xl sm:text-base sm:leading-8"
+            {...riseIn(1.25)}
+            className="mt-4 max-w-[42ch] break-words text-sm leading-7 text-white/80 sm:text-base sm:leading-8"
           >
             {/* &nbsp; giữ "80 năm" và niên đại không bị ngắt dòng lơ lửng trên mobile */}
             Tấm lòng của tập thể K7301 gửi về Lễ kỷ niệm 80&nbsp;năm thành lập
@@ -184,7 +168,7 @@ export default function Hero() {
           </motion.p>
 
           <motion.div
-            {...riseIn(1.35)}
+            {...riseIn(1.45)}
             className="mt-8 flex flex-col items-start gap-5 sm:flex-row sm:items-center sm:gap-7"
           >
             <a
@@ -199,7 +183,7 @@ export default function Hero() {
                 aria-hidden="true"
               />
             </a>
-            {/* Hành động phụ là text-link để bớt một khối hộp trên nền ảnh */}
+            {/* Hành động phụ là text-link để bớt một khối hộp */}
             <a
               href="#thu-ngo"
               className="inline-flex items-center gap-2 py-2 text-sm font-semibold text-white/85 underline decoration-heritage-gold/70 decoration-2 underline-offset-8 transition hover:text-white hover:decoration-heritage-gold"
@@ -209,15 +193,57 @@ export default function Hero() {
             </a>
           </motion.div>
         </motion.div>
+
+        {/* Tấm ảnh kỷ vật: dán băng dính lên nền, hiện nguyên vẹn — không chữ nào đè lên */}
+        <motion.figure
+          className="relative mx-auto w-full max-w-md min-w-0 lg:max-w-none"
+          style={reduceMotion ? undefined : { y: photoY, opacity: fgOpacity }}
+        >
+          <motion.div
+            initial={
+              reduceMotion
+                ? { opacity: 0 }
+                : { opacity: 0, y: 30, scale: 1.05, rotate: 1.5 }
+            }
+            animate={
+              reduceMotion
+                ? { opacity: 1 }
+                : { opacity: 1, y: 0, scale: 1, rotate: 0 }
+            }
+            transition={{ delay: 0.2, duration: 1.05, ease: EASE_OUT }}
+          >
+            {/* Khung giấy kem + độ nghiêng nhẹ như ảnh dán trong sổ lưu bút */}
+            <div className="relative -rotate-[1.5deg] bg-heritage-paper p-2.5 pb-3 shadow-letter sm:p-3 sm:pb-4">
+              <span
+                className="tape -left-5 -top-2 -rotate-45 scale-90 sm:scale-100"
+                aria-hidden="true"
+              />
+              <span
+                className="tape -right-5 -top-2 rotate-45 scale-90 sm:scale-100"
+                aria-hidden="true"
+              />
+              <img
+                src={heroImage}
+                fetchpriority="high"
+                alt="Tập thể K7301 trong lễ phục, chụp trước Trường THPT Tân Trào"
+                className="w-full"
+                style={{ filter: "sepia(0.18) saturate(1.05)" }}
+              />
+              <figcaption className="mt-2.5 text-center font-hand text-xl leading-snug text-heritage-sepia sm:mt-3 sm:text-2xl">
+                Tập thể K7301 — trước mái trường thân yêu
+              </figcaption>
+            </div>
+          </motion.div>
+        </motion.figure>
       </div>
 
       <motion.a
         href="#thu-ngo"
         aria-label="Cuộn xuống đọc thư ngỏ"
-        className="absolute bottom-6 left-1/2 hidden -translate-x-1/2 text-white/70 transition hover:text-white sm:block"
+        className="absolute bottom-6 left-1/2 hidden -translate-x-1/2 text-white/70 transition hover:text-white lg:block"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 2.2, duration: 0.8 }}
+        transition={{ delay: 2.3, duration: 0.8 }}
       >
         <ArrowDown
           className="h-6 w-6 animate-nudgeDown drop-shadow-[0_1px_3px_rgba(23,37,84,0.6)]"
