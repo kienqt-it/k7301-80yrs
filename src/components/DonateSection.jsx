@@ -71,7 +71,8 @@ function formatAmountInput(value) {
 
 // Lời nhắn kèm sau mã đối chiếu trong nội dung CK — không dấu để mọi app ngân hàng
 // hiển thị được; mã luôn đứng đầu nên webhook vẫn đối chiếu chính xác dù bị cắt bớt.
-const TRANSFER_MESSAGE = "K7301 ky niem 80 nam truong Tan Trao";
+// Không lặp lại "K7301" vì mã đối chiếu (K7301-XXXXXX) đã chứa sẵn rồi.
+const TRANSFER_MESSAGE = "ky niem 80 nam truong Tan Trao";
 
 function buildTransferContent(code) {
   return `${code} - ${TRANSFER_MESSAGE}`;
