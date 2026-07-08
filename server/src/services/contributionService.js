@@ -1,8 +1,27 @@
+import { createHash } from "node:crypto";
 import { db } from "../db.js";
 import { generateUniqueCode } from "./codeGenerator.js";
 import { extractCodeFromContent } from "./webhookMatcher.js";
 
 const PUBLIC_COLUMNS = "id, name, amount, note, confirmed_at";
+
+// Một "thành viên" = họ tên + số điện thoại (sau khi chuẩn hóa khoảng trắng,
+// chữ hoa/thường và ký tự không phải số). memberKey là mã băm ẩn danh để
+// frontend gộp các lượt đóng góp của cùng một người mà không lộ số điện thoại.
+function normalizeName(name) {
+  return String(name || "").trim().replace(/\s+/g, " ").toLowerCase();
+}
+
+function normalizePhone(phone) {
+  return String(phone || "").replace(/\D/g, "");
+}
+
+function memberKeyOf(name, phone) {
+  return createHash("sha1")
+    .update(`${normalizeName(name)}|${normalizePhone(phone)}`)
+    .digest("hex")
+    .slice(0, 12);
+}
 const ADMIN_COLUMNS =
   "id, code, name, phone, amount, note, status, source, bank_reference, reject_reason, submitted_at, confirmed_at, confirmed_by";
 
@@ -37,24 +56,31 @@ export async function getContributionStatusByCode(code) {
 
 export async function listPublicContributions({ limit = 100 } = {}) {
   const result = await db.execute({
-    sql: `SELECT ${PUBLIC_COLUMNS} FROM contributions
+    sql: `SELECT ${PUBLIC_COLUMNS}, phone FROM contributions
           WHERE status = 'confirmed'
           ORDER BY confirmed_at DESC
           LIMIT ?`,
     args: [limit],
   });
-  return result.rows.map(toAmount);
+  return result.rows.map((row) => {
+    const { phone, ...publicRow } = row;
+    return { ...toAmount(publicRow), memberKey: memberKeyOf(row.name, phone) };
+  });
 }
 
 export async function getPublicStats(targetAmount) {
   const result = await db.execute(
-    `SELECT COALESCE(SUM(amount), 0) AS total, COUNT(*) AS contributorCount
-     FROM contributions WHERE status = 'confirmed'`,
+    "SELECT name, phone, amount FROM contributions WHERE status = 'confirmed'",
   );
-  const row = result.rows[0];
+  let total = 0;
+  const members = new Set();
+  for (const row of result.rows) {
+    total += Number(row.amount);
+    members.add(memberKeyOf(row.name, row.phone));
+  }
   return {
-    total: Number(row.total),
-    contributorCount: Number(row.contributorCount),
+    total,
+    contributorCount: members.size,
     targetAmount,
   };
 }

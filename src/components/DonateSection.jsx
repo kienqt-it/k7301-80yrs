@@ -103,7 +103,7 @@ const initialForm = {
 const inputClass =
   "mt-2 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-heritage-gold focus:ring-4 focus:ring-heritage-gold/15";
 
-export default function DonateSection() {
+export default function DonateSection({ onConfirmed }) {
   const [restored] = useState(loadSavedSubmission);
   const [form, setForm] = useState(initialForm);
   const [submitting, setSubmitting] = useState(false);
@@ -175,6 +175,13 @@ export default function DonateSection() {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Vừa được xác nhận: báo cho App tải lại số liệu (tổng tiền, danh sách,
+  // bảng vàng...) để đóng góp hiện lên ngay, không cần tải lại trang.
+  useEffect(() => {
+    if (phase === "confirmed") onConfirmed?.();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase]);
 
   // Trong pha chờ: đếm ngược mỗi giây và hỏi trạng thái mỗi 5 giây.
   useEffect(() => {

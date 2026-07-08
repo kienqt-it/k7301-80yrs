@@ -20,11 +20,13 @@ const RANK_STYLES = {
   },
 };
 
+// Cộng dồn theo thành viên: memberKey (server tính từ họ tên + SĐT);
+// dữ liệu chưa có memberKey thì tạm gộp theo tên như trước.
 function aggregateTop(contributions, limit) {
   const totals = new Map();
   for (const item of contributions) {
-    const key = item.name.trim().toLowerCase();
-    const current = totals.get(key) || { name: item.name.trim(), amount: 0 };
+    const key = item.memberKey ?? item.name.trim().toLowerCase();
+    const current = totals.get(key) || { key, name: item.name.trim(), amount: 0 };
     current.amount += item.amount;
     totals.set(key, current);
   }
@@ -60,7 +62,7 @@ export default function Leaderboard({ contributions, limit = 3 }) {
           const isFirst = rank === 1;
           return (
             <motion.li
-              key={entry.name}
+              key={entry.key}
               initial={{ opacity: 0, y: 36 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.4 }}

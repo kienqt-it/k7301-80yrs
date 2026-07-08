@@ -67,7 +67,7 @@ export default function ContributionStats({
                 <CountUp key={contributorCount} end={contributorCount} duration={1.6} />
               </p>
               <p className="mt-1 flex items-center justify-between gap-2 text-sm text-white/68">
-                lượt đóng góp
+                người đã đóng góp
                 <span className="inline-flex items-center gap-1 text-xs font-semibold text-heritage-goldSoft opacity-80 transition group-hover:opacity-100">
                   Xem danh sách
                   <ChevronRight

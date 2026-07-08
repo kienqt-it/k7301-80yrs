@@ -16,8 +16,30 @@ const AVATAR_TONES = [
   "from-heritage-blue to-heritage-blueDark",
 ];
 
+// Gộp các lượt đóng góp của cùng một thành viên (memberKey do server tính từ
+// họ tên + số điện thoại; dữ liệu cũ chưa có memberKey thì tạm gộp theo tên).
+function groupByMember(contributions) {
+  const map = new Map();
+  for (const person of contributions) {
+    const key =
+      person.memberKey ??
+      `${String(person.name || "").trim().replace(/\s+/g, " ").toLowerCase()}|${String(
+        person.phone || "",
+      ).replace(/\D/g, "")}`;
+    let member = map.get(key);
+    if (!member) {
+      member = { key, name: person.name, total: 0, entries: [] };
+      map.set(key, member);
+    }
+    member.total += Number(person.amount) || 0;
+    member.entries.push(person);
+  }
+  return [...map.values()];
+}
+
 export default function ContributorListDialog({ open, onClose, contributions }) {
   const panelRef = useRef(null);
+  const members = useMemo(() => groupByMember(contributions), [contributions]);
   const total = useMemo(
     () => contributions.reduce((sum, person) => sum + (Number(person.amount) || 0), 0),
     [contributions],
@@ -97,7 +119,7 @@ export default function ContributorListDialog({ open, onClose, contributions }) 
               <div className="mt-4 flex flex-wrap gap-2 text-sm">
                 <span className="inline-flex items-center gap-2 rounded-full border border-heritage-gold/40 bg-white/10 px-3 py-1.5 font-semibold text-heritage-goldSoft">
                   <Heart className="h-3.5 w-3.5 fill-current" aria-hidden="true" />
-                  {contributions.length} lượt đóng góp
+                  {members.length} thành viên · {contributions.length} lượt
                 </span>
                 <span className="inline-flex items-center rounded-full border border-white/15 bg-white/10 px-3 py-1.5 font-semibold text-white/90">
                   Tổng: {formatCurrency(total)} đồng
@@ -115,8 +137,8 @@ export default function ContributorListDialog({ open, onClose, contributions }) 
                 </div>
               ) : (
                 <ul className="divide-y divide-heritage-gold/15">
-                  {contributions.map((person, index) => (
-                    <li key={person.id ?? index}>
+                  {members.map((member, index) => (
+                    <li key={member.key}>
                       <div className="flex items-start gap-3 rounded-lg px-2 py-3.5 transition hover:bg-heritage-cream/60 sm:gap-4 sm:px-3">
                         <span
                           className={`mt-0.5 grid h-10 w-10 shrink-0 place-items-center rounded-full bg-gradient-to-br text-sm font-bold text-white shadow-sm ${
@@ -124,34 +146,73 @@ export default function ContributorListDialog({ open, onClose, contributions }) 
                           }`}
                           aria-hidden="true"
                         >
-                          {initialsOf(person.name)}
+                          {initialsOf(member.name)}
                         </span>
 
                         <div className="min-w-0 flex-1">
                           <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
-                            <h3 className="min-w-0 truncate text-sm font-bold sm:text-base">
-                              {person.name}
+                            <h3 className="flex min-w-0 items-baseline gap-2 text-sm font-bold sm:text-base">
+                              <span className="min-w-0 truncate">{member.name}</span>
+                              {member.entries.length > 1 && (
+                                <span className="shrink-0 rounded-full bg-heritage-gold/15 px-2 py-0.5 text-[11px] font-semibold text-heritage-sepia">
+                                  {member.entries.length} lượt
+                                </span>
+                              )}
                             </h3>
                             <p className="shrink-0 text-sm font-bold text-heritage-red sm:text-base">
-                              {formatCurrency(person.amount)} đ
+                              {formatCurrency(member.total)} đ
                             </p>
                           </div>
 
-                          {person.note && (
-                            <p className="mt-1 flex items-start gap-1.5 font-hand text-lg leading-snug text-heritage-sepia">
-                              <Quote
-                                className="mt-1 h-3 w-3 shrink-0 text-heritage-gold"
-                                aria-hidden="true"
-                              />
-                              <span className="min-w-0 break-words">{person.note}</span>
-                            </p>
-                          )}
-
-                          {(person.confirmed_at || person.paidAt) && (
-                            <p className="mt-1.5 flex items-center gap-1.5 text-xs text-slate-500">
-                              <CalendarDays className="h-3.5 w-3.5" aria-hidden="true" />
-                              {formatDate(person.confirmed_at || person.paidAt)}
-                            </p>
+                          {member.entries.length === 1 ? (
+                            <>
+                              {member.entries[0].note && (
+                                <p className="mt-1 flex items-start gap-1.5 font-hand text-lg leading-snug text-heritage-sepia">
+                                  <Quote
+                                    className="mt-1 h-3 w-3 shrink-0 text-heritage-gold"
+                                    aria-hidden="true"
+                                  />
+                                  <span className="min-w-0 break-words">
+                                    {member.entries[0].note}
+                                  </span>
+                                </p>
+                              )}
+                              {(member.entries[0].confirmed_at || member.entries[0].paidAt) && (
+                                <p className="mt-1.5 flex items-center gap-1.5 text-xs text-slate-500">
+                                  <CalendarDays className="h-3.5 w-3.5" aria-hidden="true" />
+                                  {formatDate(
+                                    member.entries[0].confirmed_at || member.entries[0].paidAt,
+                                  )}
+                                </p>
+                              )}
+                            </>
+                          ) : (
+                            <ul className="mt-2 space-y-2.5 border-l-2 border-heritage-gold/25 pl-3">
+                              {member.entries.map((entry, entryIndex) => (
+                                <li key={entry.id ?? entryIndex}>
+                                  {entry.note && (
+                                    <p className="flex items-start gap-1.5 font-hand text-lg leading-snug text-heritage-sepia">
+                                      <Quote
+                                        className="mt-1 h-3 w-3 shrink-0 text-heritage-gold"
+                                        aria-hidden="true"
+                                      />
+                                      <span className="min-w-0 break-words">{entry.note}</span>
+                                    </p>
+                                  )}
+                                  <p className="mt-0.5 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs text-slate-500">
+                                    <CalendarDays
+                                      className="h-3.5 w-3.5 shrink-0"
+                                      aria-hidden="true"
+                                    />
+                                    {formatDate(entry.confirmed_at || entry.paidAt)}
+                                    <span aria-hidden="true">·</span>
+                                    <span className="font-semibold text-heritage-sepia">
+                                      {formatCurrency(entry.amount)} đ
+                                    </span>
+                                  </p>
+                                </li>
+                              ))}
+                            </ul>
                           )}
                         </div>
                       </div>
