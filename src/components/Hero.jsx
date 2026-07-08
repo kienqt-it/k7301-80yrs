@@ -124,9 +124,11 @@ export default function Hero() {
         </span>
       </motion.div>
 
-      <div className="mx-auto flex min-h-[82svh] max-w-7xl items-center px-4 pb-16 pt-28 sm:px-6 lg:px-8">
+      {/* md trở lên: neo khối chữ xuống góc trái-dưới (vùng vignette tối nhất) để
+          biển trường và mặt tiền trong ảnh lộ hoàn toàn, chữ không đè lên chữ */}
+      <div className="mx-auto flex min-h-[82svh] max-w-7xl items-center px-4 pb-16 pt-28 sm:px-6 md:items-end md:pb-20 lg:px-8 lg:pb-24">
         <motion.div
-          className="w-full min-w-0 max-w-3xl"
+          className="w-full min-w-0 max-w-2xl"
           style={reduceMotion ? undefined : { y: fgY, opacity: fgOpacity }}
         >
           {/* Dòng chữ tay tự viết ra như nét mực trên giấy */}
@@ -155,7 +157,7 @@ export default function Hero() {
 
           {/* Tiêu đề nét dần vào tiêu điểm như ký ức rõ dần */}
           <motion.h1
-            className="mt-3 max-w-3xl break-words text-5xl font-bold leading-[1.12] text-white sm:text-6xl lg:text-7xl"
+            className="mt-3 max-w-xl break-words text-4xl font-bold leading-[1.15] text-white sm:text-5xl lg:text-6xl"
             initial={
               reduceMotion
                 ? { opacity: 0 }
@@ -187,7 +189,7 @@ export default function Hero() {
           >
             <a
               href="#form-gop"
-              className="relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-md bg-heritage-gold px-6 py-3 text-sm font-bold text-heritage-blueDark shadow-soft transition hover:-translate-y-0.5 hover:bg-heritage-goldSoft active:translate-y-0 active:scale-[0.98]"
+              className="relative inline-flex w-full items-center justify-center gap-2 overflow-hidden rounded-md bg-heritage-gold px-6 py-3 text-sm font-bold text-heritage-blueDark shadow-soft transition hover:-translate-y-0.5 hover:bg-heritage-goldSoft active:translate-y-0 active:scale-[0.98] sm:w-auto"
             >
               <HeartHandshake className="h-5 w-5" aria-hidden="true" />
               Ghi nhận đóng góp
