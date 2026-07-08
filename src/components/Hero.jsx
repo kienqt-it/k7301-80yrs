@@ -130,17 +130,18 @@ export default function Hero() {
           style={reduceMotion ? undefined : { y: fgY, opacity: fgOpacity }}
         >
           {/* Dòng chữ tay tự viết ra như nét mực trên giấy */}
+          {/* pr trên mobile chừa chỗ cho con dấu 80 năm, tránh chữ và dấu chồng nhau */}
           <motion.p
-            className="font-hand text-2xl text-heritage-goldSoft sm:text-3xl"
+            className="pr-20 font-hand text-2xl text-heritage-goldSoft sm:pr-0 sm:text-3xl"
             initial={
               reduceMotion
                 ? { opacity: 0 }
-                : { opacity: 0, clipPath: "inset(-20% 100% -30% 0)" }
+                : { opacity: 0, clipPath: "inset(-25% 100% -35% 0)" }
             }
             animate={
               reduceMotion
                 ? { opacity: 1 }
-                : { opacity: 1, clipPath: "inset(-20% -4% -30% 0)" }
+                : { opacity: 1, clipPath: "inset(-25% -6% -35% -6%)" }
             }
             transition={{
               delay: 0.2,
@@ -158,7 +159,7 @@ export default function Hero() {
           >
             <span className="inline-flex items-center gap-2">
               <CalendarHeart className="h-4 w-4" aria-hidden="true" />
-              1946 - 2026
+              1946 – 2026
             </span>
             <motion.span
               className="h-px w-12 origin-left bg-heritage-gold"
@@ -192,8 +193,10 @@ export default function Hero() {
             {...riseIn(1.35)}
             className="mt-6 max-w-[32ch] break-words text-base leading-8 text-white/90 sm:max-w-2xl sm:text-lg"
           >
+            {/* &nbsp; giữ "80 năm" và niên đại không bị ngắt dòng lơ lửng trên mobile */}
             Cùng nhau góp một phần nghĩa tình của tập thể K7301, hướng tới Lễ
-            kỷ niệm 80 năm thành lập Trường THPT Tân Trào 1946 - 2026.
+            kỷ niệm 80&nbsp;năm thành lập Trường THPT Tân Trào
+            1946&nbsp;–&nbsp;2026.
           </motion.p>
 
           <motion.div
@@ -231,7 +234,10 @@ export default function Hero() {
         animate={{ opacity: 1 }}
         transition={{ delay: 2.45, duration: 0.8 }}
       >
-        <ArrowDown className="h-6 w-6 animate-nudgeDown" aria-hidden="true" />
+        <ArrowDown
+          className="h-6 w-6 animate-nudgeDown drop-shadow-[0_1px_3px_rgba(23,37,84,0.6)]"
+          aria-hidden="true"
+        />
       </motion.a>
     </section>
   );
