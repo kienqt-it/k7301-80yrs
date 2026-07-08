@@ -69,8 +69,19 @@ function formatAmountInput(value) {
   return Number(digits).toLocaleString("vi-VN");
 }
 
+// Lời nhắn kèm sau mã đối chiếu trong nội dung CK — không dấu để mọi app ngân hàng
+// hiển thị được; mã luôn đứng đầu nên webhook vẫn đối chiếu chính xác dù bị cắt bớt.
+const TRANSFER_MESSAGE = "K7301 ky niem 80 nam truong Tan Trao";
+
+function buildTransferContent(code) {
+  return `${code} - ${TRANSFER_MESSAGE}`;
+}
+
 function buildQrUrl({ amount = 0, code = "" } = {}) {
-  const params = new URLSearchParams({ addInfo: code, accountName: ACCOUNT_NAME });
+  const params = new URLSearchParams({
+    addInfo: buildTransferContent(code),
+    accountName: ACCOUNT_NAME,
+  });
   if (amount > 0) params.set("amount", String(amount));
   return `https://img.vietqr.io/image/${BANK_ID}-${ACCOUNT_NO}-compact2.png?${params.toString()}`;
 }
@@ -502,8 +513,11 @@ export default function DonateSection() {
                   </div>
 
                   <p className="mt-4 text-center text-sm leading-6 text-slate-600">
-                    Nội dung CK: <strong>{submission.code}</strong> (mã đối
-                    chiếu của bạn)
+                    Nội dung CK:{" "}
+                    <strong className="break-words">
+                      {buildTransferContent(submission.code)}
+                    </strong>{" "}
+                    (mã đối chiếu của bạn kèm lời nhắn)
                   </p>
 
                   <div
@@ -534,7 +548,7 @@ export default function DonateSection() {
                   </div>
 
                   <dl className="mt-2 divide-y divide-slate-200/80">
-                    {[...bankRows, ["Nội dung CK", submission.code]].map(
+                    {[...bankRows, ["Nội dung CK", buildTransferContent(submission.code)]].map(
                       ([label, value]) => (
                         <div
                           key={label}
