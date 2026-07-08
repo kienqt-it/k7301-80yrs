@@ -1,6 +1,7 @@
-import { motion } from "framer-motion";
-import { Crown, Trophy } from "lucide-react";
-import { formatCurrency } from "../utils/format.js";
+import { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { CalendarDays, Crown, Trophy, X } from "lucide-react";
+import { formatCurrency, formatDate } from "../utils/format.js";
 
 // Kiểu bục theo thứ tự nhóm hạng: nhóm cao nhất vàng, rồi bạc, rồi đồng.
 const TIER_STYLES = [
@@ -21,6 +22,7 @@ const TIER_STYLES = [
   },
 ];
 
+const PODIUM_GROUPS = 3;
 const MAX_AVATARS_PER_GROUP = 3;
 const MAX_NAMES_PER_GROUP = 3;
 
@@ -67,17 +69,31 @@ function initialsOf(name) {
   return picked.map((word) => word[0]?.toUpperCase() ?? "").join("");
 }
 
-export default function Leaderboard({ contributions, limit = 3 }) {
-  const groups = aggregateRankGroups(contributions, Math.min(limit, 3));
+function namesSummary(members, max = 2) {
+  const names = members.map((member) => member.name);
+  if (names.length <= max) return names.join(", ");
+  return `${names.slice(0, max).join(", ")} +${names.length - max}`;
+}
+
+export default function Leaderboard({ contributions, limit = 5 }) {
+  const [selectedRank, setSelectedRank] = useState(null);
+  const groups = aggregateRankGroups(contributions, Math.min(limit, 5));
 
   if (groups.length === 0) return null;
+
+  const podium = groups.slice(0, PODIUM_GROUPS);
+  const runnersUp = groups.slice(PODIUM_GROUPS);
+  const selectedGroup = groups.find((group) => group.rank === selectedRank) ?? null;
+
+  const toggleGroup = (rank) =>
+    setSelectedRank((current) => (current === rank ? null : rank));
 
   // Bục vinh danh: nhóm hạng nhì - nhóm hạng nhất - nhóm hạng ba;
   // thiếu nhóm nào thì bỏ trống chỗ đó.
   const slots =
-    groups.length === 3
-      ? [groups[1], groups[0], groups[2]]
-      : [groups[1], groups[0], groups[2]].filter(Boolean);
+    podium.length === 3
+      ? [podium[1], podium[0], podium[2]]
+      : [podium[1], podium[0], podium[2]].filter(Boolean);
 
   return (
     <div className="mx-auto mt-12 max-w-2xl">
@@ -88,9 +104,10 @@ export default function Leaderboard({ contributions, limit = 3 }) {
 
       <ol className="mt-8 grid grid-cols-3 items-end gap-3 sm:gap-5">
         {slots.map((group, slotIndex) => {
-          const tier = groups.indexOf(group);
+          const tier = podium.indexOf(group);
           const style = TIER_STYLES[tier];
           const isFirst = group.rank === 1;
+          const isSelected = selectedRank === group.rank;
           const shownAvatars = group.members.slice(0, MAX_AVATARS_PER_GROUP);
           const extraAvatars = group.members.length - shownAvatars.length;
           const shownNames = group.members.slice(0, MAX_NAMES_PER_GROUP);
@@ -106,66 +123,181 @@ export default function Leaderboard({ contributions, limit = 3 }) {
                 delay: 0.15 + slotIndex * 0.15,
                 ease: [0.22, 1, 0.36, 1],
               }}
-              className="flex min-w-0 flex-col items-center"
+              className="flex min-w-0"
             >
-              {isFirst && (
-                <Crown
-                  className="mb-2 h-6 w-6 text-heritage-gold"
-                  aria-hidden="true"
-                />
-              )}
-              <div className="flex items-center -space-x-3" aria-hidden="true">
-                {shownAvatars.map((member) => (
-                  <span
-                    key={member.key}
-                    className={`grid shrink-0 place-items-center rounded-full border-2 bg-heritage-blueDark/80 font-display font-bold text-white backdrop-blur ${style.avatar}`}
-                  >
-                    {initialsOf(member.name)}
-                  </span>
-                ))}
-                {extraAvatars > 0 && (
-                  <span
-                    className={`grid shrink-0 place-items-center rounded-full border-2 bg-heritage-blueDark/80 font-display font-bold text-heritage-goldSoft backdrop-blur ${style.avatar}`}
-                  >
-                    +{extraAvatars}
-                  </span>
-                )}
-              </div>
-              <div className="mt-2 w-full space-y-0.5">
-                {shownNames.map((member) => (
-                  <p
-                    key={member.key}
-                    className="w-full truncate text-center text-sm font-semibold text-white sm:text-base"
-                  >
-                    {member.name}
-                  </p>
-                ))}
-                {extraNames > 0 && (
-                  <p className="w-full truncate text-center text-xs font-semibold text-white/70">
-                    +{extraNames} người nữa
-                  </p>
-                )}
-              </div>
-              <p className="w-full truncate text-center text-xs font-bold text-heritage-goldSoft sm:text-sm">
-                {formatCurrency(group.amount)} đ
-              </p>
-              {group.members.length > 1 && (
-                <p className="mt-0.5 text-[10px] font-bold uppercase tracking-[0.14em] text-white/55">
-                  đồng hạng · {group.members.length} người
-                </p>
-              )}
-              <div
-                className={`mt-3 grid w-full place-items-center rounded-t-lg ${style.pedestal}`}
+              <button
+                type="button"
+                onClick={() => toggleGroup(group.rank)}
+                aria-expanded={isSelected}
+                aria-label={`Xem thành viên hạng ${group.rank}`}
+                className={`flex w-full min-w-0 flex-col items-center justify-end rounded-xl pt-2 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-heritage-gold ${
+                  isSelected ? "bg-white/10" : "hover:bg-white/5"
+                }`}
               >
-                <span className={`font-display text-2xl font-bold ${style.number}`}>
-                  {group.rank}
-                </span>
-              </div>
+                {isFirst && (
+                  <Crown
+                    className="mb-2 h-6 w-6 text-heritage-gold"
+                    aria-hidden="true"
+                  />
+                )}
+                <div className="flex items-center -space-x-3" aria-hidden="true">
+                  {shownAvatars.map((member) => (
+                    <span
+                      key={member.key}
+                      className={`grid shrink-0 place-items-center rounded-full border-2 bg-heritage-blueDark/80 font-display font-bold text-white backdrop-blur ${style.avatar}`}
+                    >
+                      {initialsOf(member.name)}
+                    </span>
+                  ))}
+                  {extraAvatars > 0 && (
+                    <span
+                      className={`grid shrink-0 place-items-center rounded-full border-2 bg-heritage-blueDark/80 font-display font-bold text-heritage-goldSoft backdrop-blur ${style.avatar}`}
+                    >
+                      +{extraAvatars}
+                    </span>
+                  )}
+                </div>
+                <div className="mt-2 w-full space-y-0.5">
+                  {shownNames.map((member) => (
+                    <p
+                      key={member.key}
+                      className="w-full truncate text-center text-sm font-semibold text-white sm:text-base"
+                    >
+                      {member.name}
+                    </p>
+                  ))}
+                  {extraNames > 0 && (
+                    <p className="w-full truncate text-center text-xs font-semibold text-white/70">
+                      +{extraNames} người nữa
+                    </p>
+                  )}
+                </div>
+                <p className="w-full truncate text-center text-xs font-bold text-heritage-goldSoft sm:text-sm">
+                  {formatCurrency(group.amount)} đ
+                </p>
+                {group.members.length > 1 && (
+                  <p className="mt-0.5 text-[10px] font-bold uppercase tracking-[0.14em] text-white/55">
+                    đồng hạng · {group.members.length} người
+                  </p>
+                )}
+                <div
+                  className={`mt-3 grid w-full place-items-center rounded-t-lg ${style.pedestal}`}
+                >
+                  <span className={`font-display text-2xl font-bold ${style.number}`}>
+                    {group.rank}
+                  </span>
+                </div>
+              </button>
             </motion.li>
           );
         })}
       </ol>
-      <div className="gold-rule h-px w-full" />
+
+      {runnersUp.length > 0 && (
+        <ol className="mt-4 space-y-2">
+          {runnersUp.map((group, index) => {
+            const isSelected = selectedRank === group.rank;
+            return (
+              <motion.li
+                key={group.rank}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.4 }}
+                transition={{ duration: 0.5, delay: 0.5 + index * 0.1 }}
+              >
+                <button
+                  type="button"
+                  onClick={() => toggleGroup(group.rank)}
+                  aria-expanded={isSelected}
+                  className={`flex w-full items-center gap-3 rounded-lg border px-4 py-2.5 text-left transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-heritage-gold ${
+                    isSelected
+                      ? "border-heritage-gold/50 bg-white/10"
+                      : "border-white/12 bg-white/5 hover:border-heritage-gold/35 hover:bg-white/8"
+                  }`}
+                >
+                  <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-white/25 bg-white/10 font-display text-sm font-bold text-white/85">
+                    {group.rank}
+                  </span>
+                  <span className="min-w-0 flex-1 truncate text-sm font-semibold text-white">
+                    {namesSummary(group.members)}
+                  </span>
+                  {group.members.length > 1 && (
+                    <span className="shrink-0 rounded-full bg-heritage-gold/15 px-2 py-0.5 text-[11px] font-semibold text-heritage-goldSoft">
+                      {group.members.length} người
+                    </span>
+                  )}
+                  <span className="shrink-0 text-sm font-bold text-heritage-goldSoft">
+                    {formatCurrency(group.amount)} đ
+                  </span>
+                </button>
+              </motion.li>
+            );
+          })}
+        </ol>
+      )}
+
+      <AnimatePresence>
+        {selectedGroup && (
+          <motion.div
+            key={selectedGroup.rank}
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            className="overflow-hidden"
+          >
+            <div className="mt-4 rounded-xl border border-heritage-gold/25 bg-white/8 p-4 backdrop-blur sm:p-5">
+              <div className="flex items-start justify-between gap-3">
+                <p className="text-sm font-bold text-white">
+                  Hạng {selectedGroup.rank}
+                  {selectedGroup.members.length > 1 && (
+                    <span className="ml-2 rounded-full bg-heritage-gold/15 px-2 py-0.5 text-[11px] font-semibold text-heritage-goldSoft">
+                      đồng hạng · {selectedGroup.members.length} người
+                    </span>
+                  )}
+                  <span className="mt-0.5 block text-xs font-semibold text-white/65">
+                    {formatCurrency(selectedGroup.amount)} đ mỗi người
+                  </span>
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setSelectedRank(null)}
+                  className="grid h-7 w-7 shrink-0 place-items-center rounded-full border border-white/20 bg-white/10 text-white/80 transition hover:bg-white/20 hover:text-white"
+                  aria-label="Đóng danh sách hạng"
+                >
+                  <X className="h-3.5 w-3.5" aria-hidden="true" />
+                </button>
+              </div>
+              <ul className="mt-3 divide-y divide-white/10">
+                {selectedGroup.members.map((member) => (
+                  <li key={member.key} className="flex items-center gap-3 py-2.5">
+                    <span
+                      className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-heritage-gold/40 bg-heritage-blueDark/80 font-display text-sm font-bold text-heritage-goldSoft"
+                      aria-hidden="true"
+                    >
+                      {initialsOf(member.name)}
+                    </span>
+                    <span className="min-w-0 flex-1 truncate text-sm font-semibold text-white">
+                      {member.name}
+                    </span>
+                    {member.since && (
+                      <span className="flex shrink-0 items-center gap-1.5 text-xs text-white/60">
+                        <CalendarDays className="h-3.5 w-3.5" aria-hidden="true" />
+                        {formatDate(member.since)}
+                      </span>
+                    )}
+                    <span className="shrink-0 text-sm font-bold text-heritage-goldSoft">
+                      {formatCurrency(member.amount)} đ
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div className="gold-rule mt-4 h-px w-full" />
     </div>
   );
 }

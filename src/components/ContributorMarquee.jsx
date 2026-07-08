@@ -42,7 +42,7 @@ export default function ContributorMarquee({ contributions }) {
           </p>
         </div>
 
-        <Leaderboard contributions={contributions} limit={3} />
+        <Leaderboard contributions={contributions} limit={5} />
 
         <div
           ref={viewportRef}
