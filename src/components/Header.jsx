@@ -1,4 +1,4 @@
-import { HeartHandshake, Landmark } from "lucide-react";
+import { HeartHandshake, Landmark, Users } from "lucide-react";
 
 const navItems = [
   ["Thư ngỏ & mục tiêu", "thu-ngo"],
@@ -6,7 +6,7 @@ const navItems = [
   ["Chuyển khoản", "chuyen-khoan"],
 ];
 
-export default function Header() {
+export default function Header({ onShowContributors }) {
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-white/20 bg-heritage-blueDark/75 text-white backdrop-blur-xl">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
@@ -34,16 +34,34 @@ export default function Header() {
               {label}
             </a>
           ))}
+          <button
+            type="button"
+            onClick={onShowContributors}
+            className="inline-flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium text-heritage-goldSoft transition hover:bg-white/10 hover:text-heritage-gold"
+          >
+            <Users className="h-4 w-4" aria-hidden="true" />
+            Danh sách đóng góp
+          </button>
         </nav>
 
-        <a
-          href="#form-gop"
-          className="inline-flex h-10 w-10 shrink-0 items-center justify-center gap-2 rounded-md bg-heritage-gold text-sm font-semibold text-heritage-blueDark shadow-sm transition hover:bg-heritage-goldSoft sm:w-auto sm:px-3 sm:py-2"
-          aria-label="Ghi nhận đóng góp"
-        >
-          <HeartHandshake className="h-4 w-4" aria-hidden="true" />
-          <span className="hidden sm:inline">Ghi nhận đóng góp</span>
-        </a>
+        <div className="flex shrink-0 items-center gap-2">
+          <button
+            type="button"
+            onClick={onShowContributors}
+            className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-white/20 bg-white/10 text-heritage-goldSoft transition hover:bg-white/20 md:hidden"
+            aria-label="Xem danh sách thành viên đã đóng góp"
+          >
+            <Users className="h-4 w-4" aria-hidden="true" />
+          </button>
+          <a
+            href="#form-gop"
+            className="inline-flex h-10 w-10 shrink-0 items-center justify-center gap-2 rounded-md bg-heritage-gold text-sm font-semibold text-heritage-blueDark shadow-sm transition hover:bg-heritage-goldSoft sm:w-auto sm:px-3 sm:py-2"
+            aria-label="Ghi nhận đóng góp"
+          >
+            <HeartHandshake className="h-4 w-4" aria-hidden="true" />
+            <span className="hidden sm:inline">Ghi nhận đóng góp</span>
+          </a>
+        </div>
       </div>
     </header>
   );

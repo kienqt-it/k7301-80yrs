@@ -4,12 +4,14 @@ import Hero from "./components/Hero.jsx";
 import OpenLetter from "./components/OpenLetter.jsx";
 import ContributionStats from "./components/ContributionStats.jsx";
 import ContributorMarquee from "./components/ContributorMarquee.jsx";
+import ContributorListDialog from "./components/ContributorListDialog.jsx";
 import DonateSection from "./components/DonateSection.jsx";
 import ThanksFooter from "./components/ThanksFooter.jsx";
 import { targetAmount as fallbackTargetAmount } from "./data/contributions.js";
 
 export default function App() {
   const [contributions, setContributions] = useState([]);
+  const [showContributorList, setShowContributorList] = useState(false);
   const [stats, setStats] = useState({
     total: 0,
     contributorCount: 0,
@@ -34,7 +36,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-heritage-paper text-heritage-blueDark">
-      <Header />
+      <Header onShowContributors={() => setShowContributorList(true)} />
       <main>
         <Hero />
         <OpenLetter targetAmount={stats.targetAmount} />
@@ -42,11 +44,17 @@ export default function App() {
           total={stats.total}
           targetAmount={stats.targetAmount}
           contributorCount={stats.contributorCount}
+          onShowContributors={() => setShowContributorList(true)}
         />
         <ContributorMarquee contributions={contributions} />
         <DonateSection />
         <ThanksFooter />
       </main>
+      <ContributorListDialog
+        open={showContributorList}
+        onClose={() => setShowContributorList(false)}
+        contributions={contributions}
+      />
     </div>
   );
 }

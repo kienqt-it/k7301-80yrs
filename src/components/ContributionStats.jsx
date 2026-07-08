@@ -1,14 +1,19 @@
 import { useRef } from "react";
 import ReactCountUp from "react-countup";
 import { motion, useInView } from "framer-motion";
-import { Banknote, PartyPopper, Target, TrendingUp, Users } from "lucide-react";
+import { Banknote, ChevronRight, PartyPopper, Target, TrendingUp, Users } from "lucide-react";
 import SectionReveal from "./SectionReveal.jsx";
 import Fireworks from "./Fireworks.jsx";
 import { formatCurrency } from "../utils/format.js";
 
 const CountUp = ReactCountUp.default ?? ReactCountUp;
 
-export default function ContributionStats({ total, targetAmount, contributorCount }) {
+export default function ContributionStats({
+  total,
+  targetAmount,
+  contributorCount,
+  onShowContributors,
+}) {
   const progress = Math.min((total / targetAmount) * 100, 100);
   const isGoalReached = targetAmount > 0 && total >= targetAmount;
   const sectionRef = useRef(null);
@@ -48,7 +53,12 @@ export default function ContributionStats({ total, targetAmount, contributorCoun
               <p className="mt-1 text-sm text-white/68">đồng</p>
             </div>
 
-            <div className="rounded-lg border border-white/14 bg-white/10 p-4 backdrop-blur">
+            <button
+              type="button"
+              onClick={onShowContributors}
+              className="group rounded-lg border border-white/14 bg-white/10 p-4 text-left backdrop-blur transition hover:border-heritage-gold/50 hover:bg-white/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-heritage-gold"
+              aria-label="Xem danh sách tất cả thành viên đã đóng góp"
+            >
               <div className="flex items-center gap-3 text-white/78">
                 <Users className="h-5 w-5 text-heritage-goldSoft" aria-hidden="true" />
                 <span className="text-sm font-medium">Thành viên</span>
@@ -56,8 +66,17 @@ export default function ContributionStats({ total, targetAmount, contributorCoun
               <p className="mt-3 text-2xl font-bold text-white sm:text-3xl">
                 <CountUp key={contributorCount} end={contributorCount} duration={1.6} />
               </p>
-              <p className="mt-1 text-sm text-white/68">lượt đóng góp</p>
-            </div>
+              <p className="mt-1 flex items-center justify-between gap-2 text-sm text-white/68">
+                lượt đóng góp
+                <span className="inline-flex items-center gap-1 text-xs font-semibold text-heritage-goldSoft opacity-80 transition group-hover:opacity-100">
+                  Xem danh sách
+                  <ChevronRight
+                    className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5"
+                    aria-hidden="true"
+                  />
+                </span>
+              </p>
+            </button>
           </div>
         </div>
 
