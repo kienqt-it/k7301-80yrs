@@ -79,12 +79,10 @@ export default function Leaderboard({ contributions, limit = 3 }) {
   const toggleGroup = (rank) =>
     setSelectedRank((current) => (current === rank ? null : rank));
 
-  // Bục vinh danh: nhóm hạng nhì - nhóm hạng nhất - nhóm hạng ba;
-  // thiếu nhóm nào thì bỏ trống chỗ đó.
-  const slots =
-    podium.length === 3
-      ? [podium[1], podium[0], podium[2]]
-      : [podium[1], podium[0], podium[2]].filter(Boolean);
+  // Bục vinh danh ghim theo cột cố định: hạng 1 luôn ở giữa, hạng 2 bên
+  // trái, hạng 3 bên phải — thiếu hạng nào thì ô đó trống, hạng 1 không
+  // bao giờ bị lệch khỏi trung tâm.
+  const COLUMN_BY_RANK = ["col-start-2", "col-start-1", "col-start-3"];
 
   return (
     <div className="mx-auto mt-12 max-w-2xl">
@@ -94,8 +92,7 @@ export default function Leaderboard({ contributions, limit = 3 }) {
       </p>
 
       <ol className="mt-8 grid grid-cols-3 items-end gap-3 sm:gap-5">
-        {slots.map((group, slotIndex) => {
-          const tier = podium.indexOf(group);
+        {podium.map((group, tier) => {
           const style = TIER_STYLES[tier];
           const isFirst = group.rank === 1;
           const isSelected = selectedRank === group.rank;
@@ -111,10 +108,10 @@ export default function Leaderboard({ contributions, limit = 3 }) {
               viewport={{ once: true, amount: 0.4 }}
               transition={{
                 duration: 0.6,
-                delay: 0.15 + slotIndex * 0.15,
+                delay: 0.15 + tier * 0.15,
                 ease: [0.22, 1, 0.36, 1],
               }}
-              className="flex min-w-0"
+              className={`row-start-1 flex min-w-0 ${COLUMN_BY_RANK[tier]}`}
             >
               <button
                 type="button"
