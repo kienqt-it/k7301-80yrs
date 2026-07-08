@@ -86,7 +86,7 @@ export default function ContributorListDialog({ open, onClose, contributions }) 
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 48, scale: 0.98 }}
             transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            className="relative flex max-h-[88vh] w-full flex-col overflow-hidden rounded-t-2xl bg-heritage-paper text-heritage-blueDark shadow-letter outline-none sm:max-h-[82vh] sm:max-w-2xl sm:rounded-2xl"
+            className="relative flex max-h-[85dvh] w-full flex-col overflow-hidden rounded-t-2xl bg-heritage-paper text-heritage-blueDark shadow-letter outline-none sm:max-h-[82vh] sm:max-w-2xl sm:rounded-2xl"
           >
             <div className="relative shrink-0 overflow-hidden bg-heritage-blueDark px-5 py-5 text-white sm:px-7">
               <div
@@ -222,7 +222,7 @@ export default function ContributorListDialog({ open, onClose, contributions }) 
               )}
             </div>
 
-            <div className="shrink-0 border-t border-heritage-gold/20 bg-heritage-cream/50 px-5 py-3 text-center text-xs text-heritage-sepia sm:text-sm">
+            <div className="shrink-0 border-t border-heritage-gold/20 bg-heritage-cream/50 px-5 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] text-center text-xs text-heritage-sepia sm:text-sm">
               Trân trọng cảm ơn từng tấm lòng đã cùng hướng về mái trường Tân Trào 💛
             </div>
           </motion.div>

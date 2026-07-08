@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { CalendarDays, Crown, Trophy, X } from "lucide-react";
-import { formatCurrency, formatDate } from "../utils/format.js";
+import { Crown, Trophy, X } from "lucide-react";
+import { formatCurrency } from "../utils/format.js";
 
 // Kiểu bục theo thứ tự nhóm hạng: nhóm cao nhất vàng, rồi bạc, rồi đồng.
 const TIER_STYLES = [
@@ -280,12 +280,6 @@ export default function Leaderboard({ contributions, limit = 5 }) {
                     <span className="min-w-0 flex-1 truncate text-sm font-semibold text-white">
                       {member.name}
                     </span>
-                    {member.since && (
-                      <span className="flex shrink-0 items-center gap-1.5 text-xs text-white/60">
-                        <CalendarDays className="h-3.5 w-3.5" aria-hidden="true" />
-                        {formatDate(member.since)}
-                      </span>
-                    )}
                     <span className="shrink-0 text-sm font-bold text-heritage-goldSoft">
                       {formatCurrency(member.amount)} đ
                     </span>
