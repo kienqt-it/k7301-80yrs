@@ -392,7 +392,10 @@ export default function DonateSection({ onConfirmed }) {
                   <div className="mt-6 grid gap-5 sm:grid-cols-2">
                     <label className="block">
                       <span className="text-sm font-semibold text-heritage-blueDark">
-                        Họ và tên
+                        Họ và tên{" "}
+                        <span className="text-heritage-red" aria-hidden="true">
+                          *
+                        </span>
                       </span>
                       <input
                         name="name"
@@ -407,7 +410,10 @@ export default function DonateSection({ onConfirmed }) {
 
                     <label className="block">
                       <span className="text-sm font-semibold text-heritage-blueDark">
-                        Số điện thoại
+                        Số điện thoại{" "}
+                        <span className="text-heritage-red" aria-hidden="true">
+                          *
+                        </span>
                       </span>
                       <input
                         name="phone"
@@ -424,7 +430,10 @@ export default function DonateSection({ onConfirmed }) {
 
                     <label className="block sm:col-span-2">
                       <span className="text-sm font-semibold text-heritage-blueDark">
-                        Số tiền
+                        Số tiền{" "}
+                        <span className="text-heritage-red" aria-hidden="true">
+                          *
+                        </span>
                       </span>
                       <input
                         name="amount"
@@ -451,7 +460,8 @@ export default function DonateSection({ onConfirmed }) {
 
                     <label className="block sm:col-span-2">
                       <span className="text-sm font-semibold text-heritage-blueDark">
-                        Lời nhắn
+                        Lời nhắn{" "}
+                        <span className="font-normal text-slate-500">(tuỳ chọn)</span>
                       </span>
                       <input
                         name="note"
@@ -499,7 +509,7 @@ export default function DonateSection({ onConfirmed }) {
             {/* ---- Bước 2: quét mã chuyển khoản ---- */}
             <div
               id="chuyen-khoan"
-              className="border-t border-slate-200/80 bg-[#faf7ef] p-6 sm:p-10 lg:border-l lg:border-t-0"
+              className="border-t border-slate-200/80 bg-heritage-paperShade p-6 sm:p-10 lg:border-l lg:border-t-0"
             >
               <p className="text-xs font-bold uppercase leading-5 tracking-[0.18em] text-heritage-sepia">
                 Bước 2 · Quét mã chuyển khoản
@@ -568,7 +578,7 @@ export default function DonateSection({ onConfirmed }) {
                   </div>
 
                   <div
-                    className="mt-8 flex items-center gap-3 text-center text-[11px] font-bold uppercase leading-4 tracking-[0.16em] text-slate-500"
+                    className="mt-8 flex items-center gap-3 text-center text-xs font-bold uppercase leading-4 tracking-[0.16em] text-slate-500"
                     aria-hidden="true"
                   >
                     <span className="h-px flex-1 bg-slate-200" />

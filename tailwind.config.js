@@ -21,8 +21,10 @@ export default {
           blue: "#1d4ed8",
           blueDark: "#172554",
           gold: "#d4af37",
+          goldDeep: "#9c7b26",
           goldSoft: "#f6e6a8",
           paper: "#fffaf0",
+          paperShade: "#faf7ef",
           cream: "#fdf1d7",
           sepia: "#8a6a35",
         },
@@ -42,12 +44,6 @@ export default {
           "0%": { transform: "translateX(-100%)" },
           "100%": { transform: "translateX(100%)" },
         },
-        kenburns: {
-          // Zoom nhẹ, neo theo mép dưới (origin-bottom) và chỉ trôi ngang —
-          // không trôi dọc để phần dưới của ảnh hero không bị khuất.
-          "0%": { transform: "scale(1) translate3d(0, 0, 0)" },
-          "100%": { transform: "scale(1.06) translate3d(-1.2%, 0, 0)" },
-        },
         floatUp: {
           "0%": { transform: "translateY(0)", opacity: "0" },
           "12%": { opacity: "0.85" },
@@ -64,7 +60,6 @@ export default {
         shine: "shine 2.8s ease-in-out infinite",
         // Vệt sáng chạy đúng một lần qua nút CTA sau màn mở đầu hero
         shineOnce: "shine 1.1s ease-in-out 2.3s 1 both",
-        kenburns: "kenburns 26s ease-in-out infinite alternate",
         floatUp: "floatUp 14s linear infinite",
         nudgeDown: "nudgeDown 1.4s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate",
       },

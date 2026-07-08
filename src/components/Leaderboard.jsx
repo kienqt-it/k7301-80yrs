@@ -6,7 +6,7 @@ import { formatCurrency } from "../utils/format.js";
 // Kiểu bục theo thứ tự nhóm hạng: nhóm cao nhất vàng, rồi bạc, rồi đồng.
 const TIER_STYLES = [
   {
-    pedestal: "h-24 bg-gradient-to-b from-heritage-gold to-[#9c7b26]",
+    pedestal: "h-24 bg-gradient-to-b from-heritage-gold to-heritage-goldDeep",
     number: "text-heritage-blueDark/80",
     avatar: "h-16 w-16 border-heritage-gold text-xl",
   },
@@ -170,7 +170,7 @@ export default function Leaderboard({ contributions, limit = 3 }) {
                   {formatCurrency(group.amount)} đ
                 </p>
                 {group.members.length > 1 && (
-                  <p className="mt-0.5 text-[10px] font-bold uppercase tracking-[0.14em] text-white/75">
+                  <p className="mt-0.5 text-xs font-bold uppercase tracking-[0.14em] text-white/75">
                     đồng hạng · {group.members.length} người
                   </p>
                 )}
@@ -202,7 +202,7 @@ export default function Leaderboard({ contributions, limit = 3 }) {
                 <p className="text-sm font-bold text-white">
                   Hạng {selectedGroup.rank}
                   {selectedGroup.members.length > 1 && (
-                    <span className="ml-2 rounded-full bg-heritage-gold/15 px-2 py-0.5 text-[11px] font-semibold text-heritage-goldSoft">
+                    <span className="ml-2 rounded-full bg-heritage-gold/15 px-2 py-0.5 text-xs font-semibold text-heritage-goldSoft">
                       đồng hạng · {selectedGroup.members.length} người
                     </span>
                   )}

@@ -6,7 +6,14 @@ import {
   useTransform,
 } from "framer-motion";
 import { ArrowDown, HeartHandshake } from "lucide-react";
-import heroImage from "../assets/tan-trao-hero.jpg";
+// Ba cỡ ảnh xuất sẵn từ bản gốc 2400px — mobile chỉ tải ~82KB thay vì 524KB
+import heroImage800 from "../assets/tan-trao-hero-800.jpg";
+import heroImage1200 from "../assets/tan-trao-hero-1200.jpg";
+import heroImage1600 from "../assets/tan-trao-hero-1600.jpg";
+
+const HERO_SRCSET = `${heroImage800} 800w, ${heroImage1200} 1200w, ${heroImage1600} 1600w`;
+// Khung ảnh rộng tối đa 32rem (cột phải lg) / 28rem (max-w-md mobile)
+const HERO_SIZES = "(min-width: 1024px) 32rem, (min-width: 480px) 28rem, 100vw";
 
 const EASE_OUT = [0.22, 1, 0.36, 1];
 
@@ -38,15 +45,15 @@ export default function Hero() {
   const sectionRef = useRef(null);
   const reduceMotion = useReducedMotion();
 
-  // Thị sai khi cuộn rời hero: chữ và ảnh trôi lệch nhịp nhau tạo chiều sâu —
-  // chỉ transform/opacity, tắt hẳn khi người dùng bật "giảm chuyển động".
+  // Thị sai khi cuộn rời hero: chữ và ảnh trôi lệch nhịp nhau tạo chiều sâu.
+  // Chỉ dịch chuyển (transform), KHÔNG làm mờ theo cuộn — ảnh kỷ vật phải luôn
+  // rõ nét chừng nào còn trên màn hình. Tắt hẳn khi người dùng bật "giảm chuyển động".
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start start", "end start"],
   });
-  const textY = useTransform(scrollYProgress, [0, 1], [0, 90]);
-  const photoY = useTransform(scrollYProgress, [0, 1], [0, 42]);
-  const fgOpacity = useTransform(scrollYProgress, [0, 0.75], [1, 0]);
+  const textY = useTransform(scrollYProgress, [0, 1], [0, 70]);
+  const photoY = useTransform(scrollYProgress, [0, 1], [0, 30]);
 
   return (
     <section
@@ -54,10 +61,11 @@ export default function Hero() {
       id="top"
       className="relative isolate overflow-hidden bg-heritage-blueDark text-white"
     >
-      {/* Vệt ảnh loang làm không khí nền: mờ 10%, nhòe mạnh, không còn chi tiết đọc được */}
+      {/* Vệt ảnh loang làm không khí nền: mờ 10%, nhòe mạnh, không còn chi tiết đọc được —
+          dùng bản 800w là đủ vì đằng nào cũng blur */}
       <div className="absolute inset-0 -z-20" aria-hidden="true">
         <img
-          src={heroImage}
+          src={heroImage800}
           alt=""
           className="h-full w-full object-cover opacity-10 blur-lg saturate-[0.6]"
         />
@@ -83,11 +91,12 @@ export default function Hero() {
         ))}
       </div>
 
-      <div className="mx-auto grid max-w-7xl items-center gap-12 px-4 pb-20 pt-28 sm:px-6 lg:min-h-[88svh] lg:grid-cols-[minmax(0,1fr)_minmax(0,32rem)] lg:gap-16 lg:pb-24 lg:pt-32 lg:px-8">
+      {/* grid-cols-1 (minmax 0) chặn cột tự nở theo max-content làm ảnh tràn mép phải trên mobile */}
+      <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-12 px-4 pb-20 pt-28 sm:px-6 lg:min-h-[88svh] lg:grid-cols-[minmax(0,1fr)_minmax(0,32rem)] lg:gap-16 lg:px-8 lg:pb-24 lg:pt-32">
         {/* Cột chữ — luôn nằm trên nền xanh đêm đặc, không bao giờ đè lên ảnh */}
         <motion.div
           className="relative min-w-0"
-          style={reduceMotion ? undefined : { y: textY, opacity: fgOpacity }}
+          style={reduceMotion ? undefined : { y: textY }}
         >
           {/* Con dấu 80 năm đóng cạnh dòng mở thư, trên nền đặc — không chạm vào ảnh */}
           <motion.div
@@ -197,7 +206,7 @@ export default function Hero() {
         {/* Tấm ảnh kỷ vật: dán băng dính lên nền, hiện nguyên vẹn — không chữ nào đè lên */}
         <motion.figure
           className="relative mx-auto w-full max-w-md min-w-0 lg:max-w-none"
-          style={reduceMotion ? undefined : { y: photoY, opacity: fgOpacity }}
+          style={reduceMotion ? undefined : { y: photoY }}
         >
           <motion.div
             initial={
@@ -222,12 +231,16 @@ export default function Hero() {
                 className="tape -right-5 -top-2 rotate-45 scale-90 sm:scale-100"
                 aria-hidden="true"
               />
+              {/* Ảnh để nguyên bản, không phủ filter — kỷ vật phải rõ từng gương mặt */}
               <img
-                src={heroImage}
+                src={heroImage1600}
+                srcSet={HERO_SRCSET}
+                sizes={HERO_SIZES}
+                width={1600}
+                height={1067}
                 fetchpriority="high"
                 alt="Tập thể K7301 trong lễ phục, chụp trước Trường THPT Tân Trào"
-                className="w-full"
-                style={{ filter: "sepia(0.18) saturate(1.05)" }}
+                className="h-auto w-full"
               />
               <figcaption className="mt-2.5 text-center font-hand text-xl leading-snug text-heritage-sepia sm:mt-3 sm:text-2xl">
                 Tập thể K7301 — trước mái trường thân yêu

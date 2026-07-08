@@ -17,8 +17,10 @@ Token Tailwind `heritage.*` — luôn dùng token, không hard-code hex mới:
 | `heritage-red` | `#b91c1c` | Nhấn cảm xúc: số tiền, drop-cap, trái tim |
 | `heritage-redDark` | `#7f1d1d` | Đỏ trầm cho gradient/vignette |
 | `heritage-gold` | `#d4af37` | Nhấn thương hiệu: CTA, viền, focus ring, bảng vàng |
+| `heritage-goldDeep` | `#9c7b26` | Vàng trầm: đầu tối của gradient bục vàng |
 | `heritage-goldSoft` | `#f6e6a8` | Vàng nhạt: kicker, chữ nhấn trên nền tối |
 | `heritage-paper` | `#fffaf0` | Nền trang |
+| `heritage-paperShade` | `#faf7ef` | Giấy ngả xám nhẹ: khoang phụ trong panel trắng (Bước 2) |
 | `heritage-cream` | `#fdf1d7` | Nền phụ ấm (chân dialog, hover) |
 | `heritage-sepia` | `#8a6a35` | Chữ phụ nâu trên giấy, nhãn bước |
 
@@ -55,7 +57,9 @@ Kicker section: chữ nhỏ đậm uppercase tracking `0.14–0.18em` kèm icon 
 
 - framer-motion cho reveal/press/drag; `MotionConfig reducedMotion="user"` đã bọc toàn app — mọi motion mới tự tôn trọng reduced-motion, CSS animation có media query tương ứng.
 - Easing chuẩn: `[0.22, 1, 0.36, 1]` (ease-out-quint) cho vào/ra, `cubic-bezier(0.45,0,0.55,1)` cho nhịp lặp. **Cấm bounce/elastic.**
-- Animation không khí (đặt tên trong tailwind.config): `kenburns` (hero, neo mép dưới), `floatUp` (hạt bụi vàng), `floatCard` (thiệp hoa đăng), `shine` (thanh tiến độ), `nudgeDown` (mũi tên cuộn).
+- Animation không khí (đặt tên trong tailwind.config): `floatUp` (hạt bụi vàng), `floatCard` (thiệp hoa đăng), `shine` (thanh tiến độ), `nudgeDown` (mũi tên cuộn).
+- Hero mở màn bằng framer-motion: ảnh kỷ vật đặt xuống → chữ tay tự viết (clip-path) → tiêu đề blur-in → con dấu 80 năm đóng xuống. Chữ và ảnh tách hai vùng, không đè lên nhau; ảnh không fade theo cuộn (chỉ parallax dịch chuyển) và dùng `srcset` 800/1200/1600w.
+- Nội dung phụ thuộc animation để hiện ra phải có fallback tĩnh khi `prefers-reduced-motion` (vd: thiệp hoa đăng xếp lưới tĩnh trong khung).
 - Số liệu dùng CountUp khi giá trị đổi — trang cập nhật nền 30s/focus, không reload.
 
 ## Voice & Copy

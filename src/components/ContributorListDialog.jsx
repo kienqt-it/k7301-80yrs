@@ -48,7 +48,34 @@ export default function ContributorListDialog({ open, onClose, contributions }) 
   useEffect(() => {
     if (!open) return;
     const onKeyDown = (event) => {
-      if (event.key === "Escape") onClose();
+      if (event.key === "Escape") {
+        onClose();
+        return;
+      }
+      // Khóa Tab trong dialog: aria-modal không tự chặn focus thoát ra
+      // nội dung bị che phía sau — tự bẫy Tab/Shift+Tab vòng trong panel.
+      if (event.key !== "Tab") return;
+      const panel = panelRef.current;
+      if (!panel) return;
+      const focusables = panel.querySelectorAll(
+        'a[href], button:not([disabled]), input:not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])',
+      );
+      if (focusables.length === 0) {
+        event.preventDefault();
+        return;
+      }
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      const active = document.activeElement;
+      if (event.shiftKey) {
+        if (active === first || !panel.contains(active)) {
+          event.preventDefault();
+          last.focus();
+        }
+      } else if (active === last || !panel.contains(active)) {
+        event.preventDefault();
+        first.focus();
+      }
     };
     document.addEventListener("keydown", onKeyDown);
     const previousOverflow = document.body.style.overflow;
@@ -156,7 +183,7 @@ export default function ContributorListDialog({ open, onClose, contributions }) 
                             <h3 className="flex min-w-0 items-baseline gap-2 text-sm font-bold sm:text-base">
                               <span className="min-w-0 truncate">{member.name}</span>
                               {member.entries.length > 1 && (
-                                <span className="shrink-0 rounded-full bg-heritage-gold/15 px-2 py-0.5 text-[11px] font-semibold text-heritage-sepia">
+                                <span className="shrink-0 rounded-full bg-heritage-gold/15 px-2 py-0.5 text-xs font-semibold text-heritage-sepia">
                                   {member.entries.length} lượt
                                 </span>
                               )}

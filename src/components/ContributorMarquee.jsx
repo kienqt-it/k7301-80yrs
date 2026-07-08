@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { Heart, ListChecks } from "lucide-react";
 import SectionReveal from "./SectionReveal.jsx";
 import Leaderboard from "./Leaderboard.jsx";
@@ -19,9 +19,29 @@ function tiltFor(index) {
   return ((index * 29) % 13) - 6; // -6..6 độ, lệch giả-ngẫu-nhiên nhưng ổn định
 }
 
+// Nội dung một tấm thiệp — dùng chung cho cả bản trôi lẫn bản tĩnh (giảm chuyển động)
+function CardContent({ person }) {
+  return (
+    <>
+      <div className="flex items-center gap-2">
+        <Heart
+          className="h-4 w-4 shrink-0 fill-heritage-red text-heritage-red"
+          aria-hidden="true"
+        />
+        <h3 className="truncate text-sm font-bold">{person.name}</h3>
+      </div>
+      <p className="mt-1 truncate font-hand text-lg text-heritage-sepia">{person.note}</p>
+      <p className="mt-2 text-base font-bold text-heritage-red">
+        {formatCurrency(person.amount)} đ
+      </p>
+    </>
+  );
+}
+
 export default function ContributorMarquee({ contributions }) {
   const cards = contributions.slice(0, MAX_CARDS);
   const viewportRef = useRef(null);
+  const reduceMotion = useReducedMotion();
   const [pulsingId, setPulsingId] = useState(null);
   const [draggingId, setDraggingId] = useState(null);
   const viewportHeight = Math.min(560, Math.max(320, cards.length * 50 + 260));
@@ -58,6 +78,36 @@ export default function ContributorMarquee({ contributions }) {
 
         <Leaderboard contributions={contributions} limit={3} />
 
+        {/* Giảm chuyển động: thiệp KHÔNG được phụ thuộc animation để hiện ra —
+            xếp tĩnh trong khung, đầy đủ và rõ ràng, thay vì khung trống */}
+        {reduceMotion ? (
+          <div
+            role="group"
+            className="marquee-frame relative mt-8 rounded-xl border border-heritage-gold/15 p-6 sm:p-8"
+            aria-label="Thiệp lời chúc của các thành viên đã đóng góp"
+          >
+            {cards.length === 0 ? (
+              <div className="flex flex-col items-center gap-3 py-10 text-center">
+                <Heart className="h-20 w-20 text-heritage-gold/10" aria-hidden="true" />
+                <p className="max-w-xs font-hand text-xl text-heritage-goldSoft/70">
+                  Hãy là người tiếp theo gửi lời chúc yêu thương...
+                </p>
+              </div>
+            ) : (
+              <div className="relative z-10 flex flex-wrap justify-center gap-4 sm:gap-5">
+                {cards.map((person, index) => (
+                  <article
+                    key={person.id}
+                    style={{ rotate: `${tiltFor(index)}deg` }}
+                    className="w-52 rounded-lg border border-heritage-gold/40 bg-heritage-paper/95 p-4 text-heritage-blueDark shadow-letter sm:w-60"
+                  >
+                    <CardContent person={person} />
+                  </article>
+                ))}
+              </div>
+            )}
+          </div>
+        ) : (
         <div
           ref={viewportRef}
           role="group"
@@ -112,27 +162,20 @@ export default function ContributorMarquee({ contributions }) {
                     dragEnabled ? "cursor-grab active:cursor-grabbing" : ""
                   }`}
                 >
-                  <div className="flex items-center gap-2">
-                    <Heart
-                      className="h-4 w-4 shrink-0 fill-heritage-red text-heritage-red"
-                      aria-hidden="true"
-                    />
-                    <h3 className="truncate text-sm font-bold">{person.name}</h3>
-                  </div>
-                  <p className="mt-1 truncate font-hand text-lg text-heritage-sepia">{person.note}</p>
-                  <p className="mt-2 text-base font-bold text-heritage-red">
-                    {formatCurrency(person.amount)} đ
-                  </p>
+                  <CardContent person={person} />
                 </motion.article>
               </div>
             );
           })}
         </div>
+        )}
 
         <p className="mx-auto mt-6 max-w-2xl text-center text-sm leading-7 text-white/70">
-          {dragEnabled
-            ? "Thiệp trôi lên rồi mờ dần như hoa đăng thả trôi — kéo một tấm đi bất kỳ đâu, rồi bấm vào để xem nhịp yêu thương đập lên từ đó."
-            : "Thiệp trôi lên rồi mờ dần như hoa đăng thả trôi — chạm vào một tấm để xem nhịp yêu thương đập lên từ đó."}
+          {reduceMotion
+            ? "Mỗi tấm thiệp là một lời chúc của thành viên đã đóng góp gửi về mái trường."
+            : dragEnabled
+              ? "Thiệp trôi lên rồi mờ dần như hoa đăng thả trôi — kéo một tấm đi bất kỳ đâu, rồi bấm vào để xem nhịp yêu thương đập lên từ đó."
+              : "Thiệp trôi lên rồi mờ dần như hoa đăng thả trôi — chạm vào một tấm để xem nhịp yêu thương đập lên từ đó."}
         </p>
       </div>
     </SectionReveal>
