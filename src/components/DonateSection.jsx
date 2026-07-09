@@ -18,7 +18,7 @@ import TornEdge from "./TornEdge.jsx";
 import { formatCurrency, normalizeAmount } from "../utils/format.js";
 
 const BANK_ID = "BIDV"; // TMCP Đầu tư & Phát triển Việt Nam
-const ACCOUNT_NO = "8829453996";
+const ACCOUNT_NO = "96247DOO5Z";
 const ACCOUNT_NAME = "QUAN TRUNG KIEN";
 
 const CONFIRM_WINDOW_MS = 10 * 60 * 1000;
@@ -57,8 +57,8 @@ function clearSavedSubmission() {
 }
 
 const bankRows = [
-  ["Số tài khoản", "8829453996"],
-  ["Ngân hàng", "BIDV-CN Tuyên Quang"],
+  ["Số tài khoản", "96247DOO5Z"],
+  ["Ngân hàng", "BIDV - Tài khoản ảo SePay"],
   ["Tên tài khoản", "QUAN TRUNG KIEN"],
 ];
 
