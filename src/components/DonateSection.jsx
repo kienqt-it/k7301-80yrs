@@ -84,11 +84,12 @@ function buildTransferContent(code) {
 
 function buildQrUrl({ amount = 0, code = "" } = {}) {
   const params = new URLSearchParams({
-    addInfo: buildTransferContent(code),
-    accountName: ACCOUNT_NAME,
+    acc: ACCOUNT_NO,
+    bank: BANK_ID,
+    des: buildTransferContent(code),
   });
   if (amount > 0) params.set("amount", String(amount));
-  return `https://img.vietqr.io/image/${BANK_ID}-${ACCOUNT_NO}-compact2.png?${params.toString()}`;
+  return `https://vietqr.app/img?${params.toString()}`;
 }
 
 function formatCountdown(ms) {
