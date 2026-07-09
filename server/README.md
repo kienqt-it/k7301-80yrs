@@ -46,12 +46,15 @@ curl -H "Authorization: Bearer <ADMIN_TOKEN>" http://localhost:4000/api/admin/ex
 
 Endpoint `POST /api/webhooks/bank` đã viết sẵn logic đối chiếu (trích mã từ nội dung CK,
 khớp với contribution `pending`, tự động confirm nếu đúng mã + đúng số tiền), nhưng
-chưa được kết nối với dịch vụ thật. Để bật:
+chưa được kết nối với dịch vụ thật. Endpoint này nhận được payload nội bộ cũ và payload
+chuẩn của SePay (`content`, `transferAmount`, `id`/`referenceCode`). Để bật:
 
 1. Đăng ký tài khoản tại [Casso.vn](https://casso.vn) hoặc [SePay.vn](https://sepay.vn).
-2. Liên kết tài khoản VietinBank của trường (127000113108) với dịch vụ đó.
+2. Liên kết tài khoản BIDV `8829453996` - `QUAN TRUNG KIEN` với dịch vụ đó.
 3. Đặt `WEBHOOK_SECRET` trong `.env` bằng một chuỗi bí mật ngẫu nhiên.
-4. Trong cấu hình webhook của Casso/SePay, trỏ về `https://<domain-cua-ban>/api/webhooks/bank`,
-   kèm header `X-Webhook-Secret: <giá trị bạn đặt ở bước 3>`, body dạng
-   `{ "content": "...", "amount": 100000, "transactionId": "...", "transactionDate": "..." }`
-   (tuỳ provider có thể cần viết thêm một adapter nhỏ để map đúng field tên của họ sang format này).
+4. Trong cấu hình webhook SePay, trỏ URL về `https://<domain-cua-ban>/api/webhooks/bank`,
+   chọn sự kiện `Có tiền vào`, chọn bảo mật `API Key`, và nhập API Key đúng bằng
+   `WEBHOOK_SECRET`. SePay sẽ gửi header `Authorization: Apikey <WEBHOOK_SECRET>`.
+5. Nếu dùng provider khác hoặc muốn test thủ công, endpoint vẫn nhận header
+   `X-Webhook-Secret: <WEBHOOK_SECRET>` với body dạng
+   `{ "content": "...", "amount": 100000, "transactionId": "...", "transactionDate": "..." }`.

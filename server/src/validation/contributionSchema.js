@@ -22,3 +22,15 @@ export const bankWebhookSchema = z.object({
   transactionId: z.string().min(1),
   transactionDate: z.string().optional(),
 });
+
+export const sepayWebhookSchema = z
+  .object({
+    id: z.union([z.string(), z.number()]).optional(),
+    content: z.string().min(1),
+    transferType: z.string().optional(),
+    transferAmount: z.coerce.number().int().positive(),
+    referenceCode: z.string().optional().nullable(),
+    transactionDate: z.string().optional(),
+    description: z.string().optional().nullable(),
+  })
+  .passthrough();
