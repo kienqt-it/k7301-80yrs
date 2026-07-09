@@ -165,7 +165,7 @@ export async function matchBankTransaction({ content, amount, transactionId, tra
     sql: "SELECT id FROM contributions WHERE bank_reference = ?",
     args: [transactionId],
   });
-  if (existingTx.rows[0] || alreadyConfirmed.rows[0]) {
+  if (alreadyConfirmed.rows[0]) {
     return { status: "duplicate" };
   }
 
@@ -179,6 +179,9 @@ export async function matchBankTransaction({ content, amount, transactionId, tra
   const candidate = candidateResult?.rows[0];
 
   if (!candidate || Number(candidate.amount) !== amount) {
+    if (existingTx.rows[0]) {
+      return { status: "duplicate" };
+    }
     await db.execute({
       sql: `INSERT INTO unmatched_transactions (raw_content, amount, transaction_id, received_at)
             VALUES (?, ?, ?, ?)`,
@@ -192,5 +195,11 @@ export async function matchBankTransaction({ content, amount, transactionId, tra
     source: "webhook",
     bankReference: transactionId,
   });
+  if (existingTx.rows[0]) {
+    await db.execute({
+      sql: "UPDATE unmatched_transactions SET linked_contribution_id = ? WHERE id = ?",
+      args: [confirmed.id, existingTx.rows[0].id],
+    });
+  }
   return { status: "confirmed", contribution: confirmed };
 }
