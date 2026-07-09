@@ -1,11 +1,12 @@
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
+  AnimatePresence,
   motion,
   useReducedMotion,
   useScroll,
   useTransform,
 } from "framer-motion";
-import { ArrowDown, HeartHandshake } from "lucide-react";
+import { ArrowDown, HeartHandshake, X, ZoomIn } from "lucide-react";
 // Ba cỡ ảnh xuất sẵn từ bản gốc 2400px — mobile chỉ tải ~82KB thay vì 524KB
 import heroImage800 from "../assets/tan-trao-hero-800.jpg";
 import heroImage1200 from "../assets/tan-trao-hero-1200.jpg";
@@ -43,7 +44,28 @@ const dustParticles = Array.from({ length: 14 }, (_, i) => ({
 
 export default function Hero() {
   const sectionRef = useRef(null);
+  const lightboxRef = useRef(null);
   const reduceMotion = useReducedMotion();
+  const [photoOpen, setPhotoOpen] = useState(false);
+
+  // Lightbox mở: khóa cuộn trang, Esc để đóng, đóng xong trả focus về
+  // đúng tấm ảnh vừa bấm (theo nếp của ContributorListDialog).
+  useEffect(() => {
+    if (!photoOpen) return undefined;
+    const onKeyDown = (event) => {
+      if (event.key === "Escape") setPhotoOpen(false);
+    };
+    document.addEventListener("keydown", onKeyDown);
+    const previousOverflow = document.body.style.overflow;
+    const previousFocus = document.activeElement;
+    document.body.style.overflow = "hidden";
+    lightboxRef.current?.focus();
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      document.body.style.overflow = previousOverflow;
+      if (previousFocus instanceof HTMLElement) previousFocus.focus();
+    };
+  }, [photoOpen]);
 
   // Thị sai khi cuộn rời hero: chữ và ảnh trôi lệch nhịp nhau tạo chiều sâu.
   // Chỉ dịch chuyển (transform), KHÔNG làm mờ theo cuộn — ảnh kỷ vật phải luôn
@@ -221,8 +243,21 @@ export default function Hero() {
             }
             transition={{ delay: 0.2, duration: 1.05, ease: EASE_OUT }}
           >
-            {/* Khung giấy kem + độ nghiêng nhẹ như ảnh dán trong sổ lưu bút */}
-            <div className="relative -rotate-[1.5deg] bg-heritage-paper p-2.5 pb-3 shadow-letter sm:p-3 sm:pb-4">
+            {/* Khung giấy kem + độ nghiêng nhẹ như ảnh dán trong sổ lưu bút.
+                Cả tấm ảnh là nút bấm: nhấc ảnh lên xem gần (lightbox) — hover
+                thì ảnh thẳng lại và nhích lên như sắp được gỡ khỏi mặt bàn */}
+            <motion.button
+              type="button"
+              onClick={() => setPhotoOpen(true)}
+              initial={{ rotate: -1.5 }}
+              animate={{ rotate: -1.5 }}
+              whileHover={{ rotate: 0, y: -5 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ duration: 0.35, ease: EASE_OUT }}
+              aria-haspopup="dialog"
+              aria-label="Phóng to ảnh kỷ niệm tập thể K7301"
+              className="group relative block w-full cursor-zoom-in bg-heritage-paper p-2.5 pb-3 text-left shadow-letter transition-shadow duration-300 hover:shadow-[0_30px_72px_rgba(90,62,20,0.3)] sm:p-3 sm:pb-4"
+            >
               <span
                 className="tape -left-5 -top-2 -rotate-45 scale-90 sm:scale-100"
                 aria-hidden="true"
@@ -232,20 +267,27 @@ export default function Hero() {
                 aria-hidden="true"
               />
               {/* Ảnh để nguyên bản, không phủ filter — kỷ vật phải rõ từng gương mặt */}
-              <img
-                src={heroImage1600}
-                srcSet={HERO_SRCSET}
-                sizes={HERO_SIZES}
-                width={1600}
-                height={1067}
-                fetchpriority="high"
-                alt="Tập thể K7301 trong lễ phục, chụp trước Trường THPT Tân Trào"
-                className="h-auto w-full"
-              />
-              <figcaption className="mt-2.5 text-center font-hand text-xl leading-snug text-heritage-sepia sm:mt-3 sm:text-2xl">
+              <span className="relative block">
+                <img
+                  src={heroImage1600}
+                  srcSet={HERO_SRCSET}
+                  sizes={HERO_SIZES}
+                  width={1600}
+                  height={1067}
+                  fetchpriority="high"
+                  alt="Tập thể K7301 trong lễ phục, chụp trước Trường THPT Tân Trào"
+                  className="h-auto w-full"
+                />
+                {/* Gợi ý chạm — luôn hiện vì mobile không có hover, đậm lên khi hover */}
+                <span className="pointer-events-none absolute bottom-3 right-3 inline-flex items-center gap-1.5 rounded-full bg-heritage-blueDark/60 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur-sm transition group-hover:bg-heritage-blueDark/80">
+                  <ZoomIn className="h-3.5 w-3.5" aria-hidden="true" />
+                  Xem ảnh
+                </span>
+              </span>
+              <span className="mt-2.5 block text-center font-hand text-xl leading-snug text-heritage-sepia sm:mt-3 sm:text-2xl">
                 Tập thể K7301 — trước mái trường thân yêu
-              </figcaption>
-            </div>
+              </span>
+            </motion.button>
           </motion.div>
         </motion.figure>
       </div>
@@ -263,6 +305,71 @@ export default function Hero() {
           aria-hidden="true"
         />
       </motion.a>
+
+      {/* Lightbox: nhấc tấm ảnh kỷ vật lên ngang tầm mắt — ảnh thẳng lại,
+          căn phòng tối đi. Với "giảm chuyển động", MotionConfig tự bỏ phần
+          dịch chuyển và chỉ giữ crossfade. */}
+      <AnimatePresence>
+        {photoOpen && (
+          <motion.div
+            className="fixed inset-0 z-[70] flex items-center justify-center p-4 sm:p-10"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, transition: { duration: 0.2 } }}
+            transition={{ duration: 0.25 }}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Ảnh kỷ niệm tập thể K7301 — xem phóng to"
+          >
+            <div
+              className="absolute inset-0 bg-heritage-blueDark/85 backdrop-blur-md"
+              onClick={() => setPhotoOpen(false)}
+              aria-hidden="true"
+            />
+            <motion.div
+              ref={lightboxRef}
+              tabIndex={-1}
+              initial={{ opacity: 0, scale: 0.86, y: 28, rotate: -1.5 }}
+              animate={{ opacity: 1, scale: 1, y: 0, rotate: 0 }}
+              exit={{
+                opacity: 0,
+                scale: 0.92,
+                y: 16,
+                rotate: -1,
+                transition: { duration: 0.3, ease: EASE_OUT },
+              }}
+              transition={{ duration: 0.42, ease: EASE_OUT }}
+              className="relative max-w-[min(92vw,68rem)] outline-none"
+            >
+              <figure className="relative bg-heritage-paper p-2.5 pb-3 shadow-[0_40px_120px_rgba(0,0,0,0.55)] sm:p-3 sm:pb-4">
+                <span className="tape -left-5 -top-2 -rotate-45" aria-hidden="true" />
+                <span className="tape -right-5 -top-2 rotate-45" aria-hidden="true" />
+                <img
+                  src={heroImage1600}
+                  srcSet={HERO_SRCSET}
+                  sizes="92vw"
+                  width={1600}
+                  height={1067}
+                  alt="Tập thể K7301 trong lễ phục, chụp trước Trường THPT Tân Trào"
+                  className="block h-auto max-h-[72svh] w-auto max-w-full cursor-zoom-out"
+                  onClick={() => setPhotoOpen(false)}
+                />
+                <figcaption className="mt-2.5 text-center font-hand text-xl leading-snug text-heritage-sepia sm:mt-3 sm:text-2xl">
+                  Tập thể K7301 — trước mái trường thân yêu
+                </figcaption>
+              </figure>
+              <button
+                type="button"
+                onClick={() => setPhotoOpen(false)}
+                className="absolute -right-3 -top-3 grid h-11 w-11 place-items-center rounded-full border border-white/25 bg-heritage-blueDark/90 text-white/85 shadow-lg backdrop-blur transition hover:bg-heritage-blueDark hover:text-white"
+                aria-label="Đóng ảnh"
+              >
+                <X className="h-5 w-5" aria-hidden="true" />
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }
