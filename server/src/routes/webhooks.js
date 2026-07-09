@@ -8,8 +8,15 @@ function isAuthorized(req) {
   const expectedSecret = process.env.WEBHOOK_SECRET;
   const authorization = (req.get("authorization") || "").trim();
   const [scheme = "", token = ""] = authorization.split(/\s+/, 2);
+  const directApiKey = firstText(
+    req.get("x-webhook-secret"),
+    req.get("x-api-key"),
+    req.get("x-sepay-api-key"),
+  );
+
   return (
-    req.get("x-webhook-secret") === expectedSecret ||
+    directApiKey === expectedSecret ||
+    authorization === expectedSecret ||
     ((scheme.toLowerCase() === "apikey" || scheme.toLowerCase() === "bearer") &&
       token === expectedSecret)
   );
@@ -64,7 +71,10 @@ webhooksRouter.post("/bank", async (req, res, next) => {
       return res.status(500).json({ error: "WEBHOOK_SECRET chưa được cấu hình" });
     }
     if (!isAuthorized(req)) {
-      return res.status(401).json({ error: "Không có quyền truy cập" });
+      return res.status(401).json({
+        error: "Không có quyền truy cập",
+        hint: "Kiểm tra API Key trong SePay phải trùng WEBHOOK_SECRET trên Vercel",
+      });
     }
 
     const parsed = parseWebhookPayload(req.body);
