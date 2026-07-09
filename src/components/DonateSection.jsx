@@ -71,12 +71,15 @@ function formatAmountInput(value) {
 }
 
 // Lời nhắn kèm sau mã đối chiếu trong nội dung CK — không dấu để mọi app ngân hàng
-// hiển thị được; mã luôn đứng đầu nên webhook vẫn đối chiếu chính xác dù bị cắt bớt.
-// Không lặp lại "K7301" vì mã đối chiếu (K7301-XXXXXX) đã chứa sẵn rồi.
-const TRANSFER_MESSAGE = "ky niem 80 nam truong Tan Trao";
+// hiển thị được; bỏ dấu gạch trong mã để khớp đúng nội dung mà ngân hàng/SePay nhận.
+const TRANSFER_MESSAGE = "80 nam truong Tan Trao";
+
+function formatTransferCode(code) {
+  return String(code || "").replace("-", "");
+}
 
 function buildTransferContent(code) {
-  return `${code} - ${TRANSFER_MESSAGE}`;
+  return `${formatTransferCode(code)} ${TRANSFER_MESSAGE}`;
 }
 
 function buildQrUrl({ amount = 0, code = "" } = {}) {
